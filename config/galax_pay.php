@@ -28,7 +28,7 @@ return [
      |
      */
 
-    'auth_as_partner' => env('GALAX_PAY_AUTH_AS_PARTNER', true),
+    'auth_as_partner' => env('GALAX_PAY_AUTH_AS_PARTNER', false),
 
     'galax_id' => env('GALAX_PAY_ID', '5473'),
 
@@ -56,7 +56,7 @@ return [
      | a partner ('auth_as_partner' => true) change value to 'database'.
      |
      */
-    'session_driver' => env('GALAX_PAY_SESSION_DRIVER', 'database'),
+    'session_driver' => env('GALAX_PAY_SESSION_DRIVER', 'file'),
 
     /*
      |--------------------------------------------------------------------------
