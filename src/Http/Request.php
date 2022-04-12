@@ -40,8 +40,8 @@ final class Request
      * @param array $options
      * @return array
      * @throws \GuzzleHttp\Exception\ServerException
-     * @throws \GalaxPaySdkPhp\Exceptions\GalaxPayRequestException
-     * @throws \GalaxPaySdkPhp\Exceptions\AuthorizationException
+     * @throws \JosanBr\GalaxPay\Exceptions\AuthorizationException
+     * @throws \JosanBr\GalaxPay\Exceptions\GalaxPayRequestException
      */
     public function send(string $method, string $route, array $options = [])
     {
@@ -59,8 +59,8 @@ final class Request
             $status = $e->getResponse()->getStatusCode();
             $data = json_decode($e->getResponse()->getBody()->getContents(), true);
 
-            $details = isset($data['error']['details']) ? $data['error']['details'] : [];
-            $message = isset($data['error']['message']) ? $data['error']['message'] : $e->getMessage();
+            $details = data_get($data, 'error.details', []);
+            $message = data_get($data, 'error.message', $e->getMessage());
 
             if ($status == 401)
                 throw new AuthorizationException($status, $message);
