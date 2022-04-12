@@ -21,4 +21,6 @@ interface Session
     public function getCredentials(): array;
 
     public function updateOrCreate($clientId, $values = []): void;
+    
+    public function remove($clientId): bool;
 }

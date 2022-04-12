@@ -22,14 +22,14 @@ class File extends Session implements ContractsSession
 
     public function checkSession($clientId): void
     {
-        $session = $this->sessions->where('client_id', $clientId)->first();
+        $session = $this->sessions->where('clientId', $clientId)->first();
 
         if ($session) {
             foreach (array_keys($this->session) as $key)
                 $this->set($key, data_get($session, $key));
         } else $this->clear();
 
-        $this->set('client_id', $clientId);
+        $this->set('clientId', $clientId);
     }
 
     public function expired(): bool
@@ -53,12 +53,12 @@ class File extends Session implements ContractsSession
             return $item['clientId'] == $clientId;
         });
 
+        foreach (array_keys($this->session) as $key)
+            $this->set($key, data_get($values, $key));
+
+        $this->set('clientId', $clientId);
+
         if ($sessionKey) {
-            foreach (array_keys($this->session) as $key)
-                $this->set($key, data_get($values, $key));
-
-            $this->set('clientId', $clientId);
-
             $this->sessions = $this->sessions->map(function ($item, $key) use ($sessionKey) {
                 if ($key == $sessionKey) return $this->session;
                 return $item;
@@ -66,6 +66,19 @@ class File extends Session implements ContractsSession
         } else $this->sessions->push($this->session);
 
         file_put_contents($this->getDirectory(), $this->sessions->toJson());
+    }
+
+    public function remove($clientId): bool
+    {
+        $sessionKey = $this->sessions->search(function ($item) use ($clientId) {
+            return $item['clientId'] == $clientId;
+        });
+
+        $this->sessions->pull($sessionKey);
+
+        file_put_contents($this->getDirectory(), $this->sessions->toJson());
+
+        return $this->sessions->firstWhere('clientId', '=', $clientId)->count() == 0;
     }
 
     private function getDirectory(): string

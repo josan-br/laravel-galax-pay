@@ -2,7 +2,6 @@
 
 namespace JosanBr\GalaxPay\Sessions;
 
-use Illuminate\Support\Facades\Log;
 use JosanBr\GalaxPay\Abstracts\Session;
 use JosanBr\GalaxPay\Contracts\Session as ContractsSession;
 use JosanBr\GalaxPay\Http\Config;
@@ -68,7 +67,7 @@ class Database extends Session implements ContractsSession
     public function updateOrCreate($clientId, $values = []): void
     {
         $Session = $this->sessionsTable['model'];
-        Log::info('updateOrCreate', $values);
+
         /** @var \JosanBr\GalaxPay\Models\GalaxPaySession */
         $session = $Session::updateOrCreate([
             $this->sessionsTable['client_id'] => $clientId
@@ -90,6 +89,23 @@ class Database extends Session implements ContractsSession
         }
 
         $this->session = collect($values)->merge(compact('clientId'))->all();
+    }
+
+    public function remove($clientId): bool
+    {
+        $Session = $this->sessionsTable['model'];
+
+        $session = $Session::where($this->sessionsTable['client_id'], $clientId)->first();
+
+        if ($session && $session->delete()) {
+            $sessionKey = $this->sessions->search(function ($item) use ($clientId) {
+                return $item['clientId'] == $clientId;
+            });
+
+            $this->sessions->pull($sessionKey);
+        }
+
+        return $this->sessions->firstWhere('clientId', '=', $clientId)->count() == 0;
     }
 
     private function setClientsTable()
