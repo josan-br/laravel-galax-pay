@@ -39,7 +39,7 @@ class File extends Session implements ContractsSession
 
     public function getClientCredentials(): array
     {
-        return [$this->config->get('galax_id'), $this->config->get('galax_hash')];
+        return [$this->config->get('credentials.galax_id'), $this->config->get('credentials.galax_hash')];
     }
 
     public function updateOrCreate($clientId, $values = []): void

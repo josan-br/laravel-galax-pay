@@ -55,7 +55,7 @@ final class Auth
         if ($this->config->get('session_driver') == 'database') {
             $this->session = new \JosanBr\GalaxPay\Sessions\Database($this->config);
         } else {
-            $this->clientId = $this->config->get('galax_id');
+            $this->clientId = $this->config->get('credentials.galax_id');
             $this->session = new \JosanBr\GalaxPay\Sessions\File($this->config);
         }
 

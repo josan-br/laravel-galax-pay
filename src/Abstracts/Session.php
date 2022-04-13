@@ -47,7 +47,7 @@ abstract class Session
 
     public function getCredentials(): array
     {
-        return [$this->config->get('galax_id'), $this->config->get('galax_hash')];
+        return [$this->config->get('credentials.galax_id'), $this->config->get('credentials.galax_hash')];
     }
 
     protected function clear()
