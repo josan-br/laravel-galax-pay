@@ -117,7 +117,9 @@ $data = GalaxPay::endpointName([
      *
      * NOTE: Use only on data fetch endpoints
      */
-    'query' => new \JosanBr\GalaxPay\QueryParams($params)
+    'query' => new \JosanBr\GalaxPay\QueryParams($params),
+    // or use the GalaxPay Facade
+    'query' => GalaxPay::queryParams($params),
 
     /**
      * Data to send to galax pay, can be an array or one of
