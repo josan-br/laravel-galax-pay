@@ -1,0 +1,49 @@
+{
+    "name": "josan-br/laravel-galax-pay",
+    "description": "Make requests to the Galax Pay API",
+    "license": "MIT",
+    "keywords": [
+        "galax pay",
+        "laravel",
+        "lumen"
+    ],
+    "support": {
+        "issues": "https://github.com/josan-br/laravel-galax-pay/issues",
+        "source": "https://github.com/josan-br/laravel-galax-pay"
+    },
+    "authors": [
+        {
+            "name": "José Antonio N. R. S.",
+            "email": "josantnun@outlook.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^7.4|^8.0",
+        "guzzlehttp/guzzle": "7.4.x-dev",
+        "illuminate/database": "8.x-dev",
+        "illuminate/support": "8.x-dev",
+        "illuminate/console": "^8.83"
+    },
+    "autoload": {
+        "psr-4": {
+            "JosanBr\\GalaxPay\\": "src/"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "master",
+            "dev-develop": "1.0-dev"
+        },
+        "laravel": {
+            "aliases": {
+                "GalaxPay": "JosanBr\\GalaxPay\\Facades\\GalaxPay"
+            },
+            "providers": [
+                "JosanBr\\GalaxPay\\Providers\\GalaxPayServiceProvider"
+            ]
+        }
+    },
+    "prefer-stable": true,
+    "minimum-stability": "dev"
+}
