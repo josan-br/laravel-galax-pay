@@ -45,6 +45,11 @@ abstract class Session
         return is_null($this->get('expiresIn')) || $this->get('expiresIn') <= time();
     }
 
+    public function getCredentials(): array
+    {
+        return [$this->config->get('galax_id'), $this->config->get('galax_hash')];
+    }
+
     protected function clear()
     {
         $this->session = ['clientId' => null, 'tokenType' => null, 'accessToken' => null, 'expiresIn' => null, 'scope' => null];

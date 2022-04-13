@@ -59,11 +59,6 @@ class Database extends Session implements ContractsSession
         return [$client[$this->clientsTable['galax_id']], $client[$this->clientsTable['galax_hash']]];
     }
 
-    public function getCredentials(): array
-    {
-        return [$this->config->get('galax_id'), $this->config->get('galax_hash')];
-    }
-
     public function updateOrCreate($clientId, $values = []): void
     {
         $Session = $this->sessionsTable['model'];
@@ -110,7 +105,7 @@ class Database extends Session implements ContractsSession
 
     private function setClientsTable()
     {
-        $table = $this->config->get('clients_table');
+        $table = $this->config->get('galax_pay_clients');
 
         if (!class_exists($table['model']))
             throw new \Exception("Galax pay client model not found", 1);
@@ -120,7 +115,7 @@ class Database extends Session implements ContractsSession
 
     private function setSessions()
     {
-        $table = $this->config->get('sessions_table');
+        $table = $this->config->get('galax_pay_sessions');
 
         if (!class_exists($table['model']))
             throw new \Exception("Galax pay session model not found", 1);
