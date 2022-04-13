@@ -24,17 +24,41 @@ return [
      | Galax Pay Partner
      |--------------------------------------------------------------------------
      |
-     | This value determines whether authentication in Galax Pay will be as a partner
+     | This value determines whether authentication in Galax Pay API will
+     | be as a partner, if so, change the session_driver to 'database' 
+     | and put your partner credentials in the 'credentials'.
      |
      */
 
     'auth_as_partner' => env('GALAX_PAY_AUTH_AS_PARTNER', false),
 
-    'galax_id' => env('GALAX_PAY_ID', '5473'),
+    /*
+     |-------------------------------------------------------------------------- 
+     | Your Galax Pay credentials
+     |--------------------------------------------------------------------------
+     |
+     | After creating a Galax Pay account you receive a 
+     | 'galax_id' and a 'galax_hash' for API authentication.
+     |
+     */
 
-    'galax_hash' => env('GALAX_PAY_HASH', '83Mw5u8988Qj6fZqS4Z8K7LzOo1j28S706R0BeFe'),
+    'credentials' => [
+        'galax_id' => env('GALAX_PAY_ID', '5473'),
+        'galax_hash' => env('GALAX_PAY_HASH', '83Mw5u8988Qj6fZqS4Z8K7LzOo1j28S706R0BeFe'),
+    ],
 
-    'webhook_hash' => env('GALAX_PAY_WEBHOOK_HASH', '5541f646369927c19b2e2132f7090ff3'),
+    /*
+     |--------------------------------------------------------------------------
+     | Galax Pay Webhook Hash
+     |--------------------------------------------------------------------------
+     |
+     | The webhook_hash is for you to be sure that it was Galax Pay that 
+     | sent you the request and not a third party trying to break into 
+     | your system, it can be obtained from the Galax Pay system.
+     |
+     */
+
+    'webhook_hash' => env('GALAX_PAY_WEBHOOK_HASH', null),
 
     /*
      |--------------------------------------------------------------------------
@@ -44,6 +68,7 @@ return [
      | All possible Galax Pay request scopes
      |
      */
+
     'scopes' => 'boletos.read card-brands.read cards.read cards.write carnes.read charges.read charges.write customers.read customers.write payment-methods.read plans.read plans.write subscriptions.read subscriptions.write transactions.read transactions.write webhooks.write',
 
     /*
@@ -51,11 +76,13 @@ return [
      | Galax Pay Session Driver
      |--------------------------------------------------------------------------
      |
-     | This value determines whether authentication sections will be
-     | saved to 'file' or 'database'. If you are going to operate as
-     | a partner ('auth_as_partner' => true) change value to 'database'.
+     | This value determines whether authentication sections will be saved to
+     | 'file' or 'database'. Session driver: database, should be used when 
+     | authentication via partner and galax_id and galax_hash of clients
+     | should be saved in galax_pay_clients table.
      |
      */
+
     'session_driver' => env('GALAX_PAY_SESSION_DRIVER', 'file'),
 
     /*
