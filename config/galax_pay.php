@@ -16,7 +16,7 @@ return [
 
     'api_urls' => [
         'production' => env('GALAX_PAY_URL_PRODUCTION', 'https://api.galaxpay.com.br/v2'),
-        'sandbox' => env('GALAX_PAY_URL_SANDBOX', 'https://api.sandbox.cloud.galaxpay.com.br')
+        'sandbox'    => env('GALAX_PAY_URL_SANDBOX', 'https://api.sandbox.cloud.galaxpay.com.br')
     ],
 
     /*
@@ -63,16 +63,18 @@ return [
      | Galax Pay Client
      |--------------------------------------------------------------------------
      |
-     | Table for clients keys in Galax Pay. To create a relationship 
-     | with the table, set the value of foreign.column and foreign.on.
+     | Table responsible for storing the credentials of Galax Pay clients.
+     | The entity and entity_id columns refer to the entity
+     | that owns the galax_id and galax_hash credentials.
      |
      */
 
-    'clients_table' => [
-        'name' => 'galax_pay_clients',
-        'model' => \JosanBr\GalaxPay\Models\GalaxPayClient::class,
+    'galax_pay_clients' => [
+        'model'      => \JosanBr\GalaxPay\Models\GalaxPayClient::class,
         // Columns
-        'galax_id' => 'galax_id',
+        'entity'     => 'entity',
+        'entity_id'  => 'entity_id',
+        'galax_id'   => 'galax_id',
         'galax_hash' => 'galax_hash',
     ],
 
@@ -81,18 +83,17 @@ return [
     | Galax Pay Sessions
     |--------------------------------------------------------------------------
     |
-    | Table for Galax Pay sessions in the database
+    | Table responsible for storing session tokens in the Galax Pay API
     |
     */
 
-    'sessions_table' => [
-        'name' => 'galax_pay_sessions',
-        'model' => \JosanBr\GalaxPay\Models\GalaxPaySession::class,
+    'galax_pay_sessions' => [
+        'model'        => \JosanBr\GalaxPay\Models\GalaxPaySession::class,
         // Columns
-        'scope' => 'scope',
-        'expires_in' => 'expires_in',
-        'token_type' => 'token_type',
+        'scope'        => 'scope',
+        'expires_in'   => 'expires_in',
+        'token_type'   => 'token_type',
         'access_token' => 'access_token',
-        'client_id' => 'galax_pay_client_id',
+        'client_id'    => 'galax_pay_client_id',
     ]
 ];
