@@ -20,7 +20,7 @@ class Publish extends Command
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Publish config and migrations from galax pay';
 
     /**
      * Create a new command instance.
