@@ -25,12 +25,25 @@
         "illuminate/support": "8.x-dev",
         "illuminate/console": "^8.83"
     },
+    "require-dev": {
+        "phpunit/phpunit": "^9.5",
+        "orchestra/testbench": "^6.24"
+    },
     "autoload": {
         "psr-4": {
             "JosanBr\\GalaxPay\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "JosanBr\\GalaxPay\\Tests\\": "tests/"
+        }
+    },
     "extra": {
+        "branch-alias": {
+            "dev-main": "1.x-dev",
+            "dev-master": "1.x-dev"
+        },
         "laravel": {
             "aliases": {
                 "GalaxPay": "JosanBr\\GalaxPay\\Facades\\GalaxPay"
@@ -41,5 +54,10 @@
         }
     },
     "prefer-stable": true,
-    "minimum-stability": "dev"
+    "minimum-stability": "dev",
+    "scripts": {
+        "post-autoload-dump": [
+            "@php ./vendor/bin/testbench package:discover --ansi"
+        ]
+    }
 }
