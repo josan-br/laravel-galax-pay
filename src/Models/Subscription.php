@@ -46,9 +46,10 @@ class Subscription extends Model
         'additionalInfo',
         'status',
         'Customer',
-        'Transactions',
         'PaymentMethodCreditCard',
-        'PaymentMethodBoleto'
+        'PaymentMethodBoleto',
+        'PaymentMethodPix',
+        'Transactions'
     ];
 
     /**

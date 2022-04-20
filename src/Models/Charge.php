@@ -33,6 +33,7 @@ class Charge extends Model
         'Customer',
         'PaymentMethodBoleto',
         'PaymentMethodCreditCard',
+        'PaymentMethodPix',
         'Transactions'
     ];
 
