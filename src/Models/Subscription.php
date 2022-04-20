@@ -19,12 +19,15 @@ use JosanBr\GalaxPay\Abstracts\Model;
  * @property Transaction[] $Transactions
  * @property PaymentMethodCreditCard $PaymentMethodCreditCard
  * @property PaymentMethodBoleto $PaymentMethodBoleto
+ * @property PaymentMethodPix $PaymentMethodPix
  */
 class Subscription extends Model
 {
     public const PAY_WITH_BILLET = 'boleto';
 
     public const PAY_WITH_CREDIT_CARD = 'creditcard';
+
+    public const PAY_WITH_PIX = 'pix';
 
     public const PERIOD_WEEKLY = 'weekly';
 
@@ -72,9 +75,10 @@ class Subscription extends Model
      * @var string[]
      */
     protected $modelRefs = [
-        'Customer' => Customer::class,
-        'Transactions' => Transaction::class,
-        'PaymentMethodCreditCard' => PaymentMethodCreditCard::class,
-        'PaymentMethodBoleto' => PaymentMethodBoleto::class,
+        'Customer'                => Customer::class,
+        'Transactions'            => Transaction::class,
+        'PaymentMethodPix'        => PaymentMethodPix::class,
+        'PaymentMethodBoleto'     => PaymentMethodBoleto::class,
+        'PaymentMethodCreditCard' => PaymentMethodCreditCard::class
     ];
 }

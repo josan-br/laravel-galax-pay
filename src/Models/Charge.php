@@ -15,6 +15,7 @@ use JosanBr\GalaxPay\Abstracts\Model;
  * @property Customer $Customer
  * @property PaymentMethodBoleto $PaymentMethodBoleto
  * @property PaymentMethodCreditCard $PaymentMethodCreditCard
+ * @property PaymentMethodPix $PaymentMethodPix
  * @property Transaction[] $Transactions
  */
 class Charge extends Model
@@ -45,14 +46,10 @@ class Charge extends Model
      * @var string[]
      */
     protected $modelRefs = [
-        'Customer' => Customer::class,
-        'PaymentMethodBoleto' => PaymentMethodBoleto::class,
+        'Customer'                => Customer::class,
+        'Transactions'            => Transaction::class,
+        'PaymentMethodPix'        => PaymentMethodPix::class,
+        'PaymentMethodBoleto'     => PaymentMethodBoleto::class,
         'PaymentMethodCreditCard' => PaymentMethodCreditCard::class,
-        'Transactions' => Transaction::class
     ];
-
-    public static function fromJson(string $json): self
-    {
-        return parent::fromJson($json);
-    }
 }
