@@ -20,12 +20,6 @@ use JosanBr\GalaxPay\Abstracts\Model;
  */
 class Charge extends Model
 {
-    public const PIX = 'pix';
-
-    public const BILLET = 'boleto';
-
-    public const CREDIT_CARD = 'creditcard';
-
     /**
      * @var string[]
      */

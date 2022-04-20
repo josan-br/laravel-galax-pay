@@ -23,26 +23,6 @@ use JosanBr\GalaxPay\Abstracts\Model;
  */
 class Subscription extends Model
 {
-    public const PAY_WITH_BILLET = 'boleto';
-
-    public const PAY_WITH_CREDIT_CARD = 'creditcard';
-
-    public const PAY_WITH_PIX = 'pix';
-
-    public const PERIOD_WEEKLY = 'weekly';
-
-    public const PERIOD_BIWEEKLY = 'biweekly';
-
-    public const PERIOD_MONTHLY = 'monthly';
-
-    public const PERIOD_BIMONTHLY = 'bimonthly';
-
-    public const PERIOD_QUARTERLY = 'quarterly';
-
-    public const PERIOD_BIANNUAL = 'biannual';
-
-    public const PERIOD_YEARLY = 'yearly';
-
     public const STATUS_ACTIVE = 'active';
 
     public const STATUS_CANCELED = 'canceled';
