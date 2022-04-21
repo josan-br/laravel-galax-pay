@@ -5,6 +5,16 @@ namespace JosanBr\GalaxPay\Abstracts;
 abstract class Model implements \ArrayAccess, \JsonSerializable
 {
     /**
+     * Id type: myId
+     */
+    public const MY_ID = 'myId';
+
+    /**
+     * Id type: galaxPayId
+     */
+    public const GALAX_PAY_ID = 'galaxPayId';
+
+    /**
      * @var array
      */
     private $attributes = [];
@@ -24,9 +34,6 @@ abstract class Model implements \ArrayAccess, \JsonSerializable
      */
     protected $modelRefs = [];
 
-    /**
-     * @var array $attributes
-     */
     public function __construct(array $attributes = [])
     {
         $this->fill($attributes);
