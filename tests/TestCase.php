@@ -27,15 +27,6 @@ class TestCase extends Orchestra
     protected function defineEnvironment($app)
     {
         $app['config']->set('galax_pay', require __DIR__ . '/../config/galax_pay.php');
-
-        $app['config']->set('database.default', env('DB_CONNECTION', 'sqlite'));
-        $app['config']->set('database.connections.sqlite', [
-            'prefix' => '',
-            'driver' => 'sqlite',
-            'url' => env('DATABASE_URL'),
-            'database' => __DIR__ . '/database/database.sqlite',
-            'foreign_key_constraints' => env('DB_FOREIGN_KEYS', true),
-        ]);
     }
 
     /**
