@@ -51,13 +51,13 @@ return [
      * Edit plan
      * @link https://docs.galaxpay.com.br/plans/edit
      */
-    'editPlans' => ['method' => 'PUT', 'route' => '/v2/plans/:planId/:typeId'],
+    'editPlan' => ['method' => 'PUT', 'route' => '/v2/plans/:planId/:typeId'],
 
     /**
      * Delete plan
      * @link https://docs.galaxpay.com.br/plans/delete
      */
-    'deletePlans' => ['method' => 'DELETE', 'route' => '/v2/plans/:planId/:typeId'],
+    'deletePlan' => ['method' => 'DELETE', 'route' => '/v2/plans/:planId/:typeId'],
 
     /**
      * List Cards
@@ -155,7 +155,7 @@ return [
      * Cancel subscription/contract
      * @link https://docs.galaxpay.com.br/subscriptions/cancel
      */
-    'cancelSubscriptions' => ['method' => 'DELETE', 'route' => '/v2/subscriptions/:subscriptionId/:typeId'],
+    'cancelSubscription' => ['method' => 'DELETE', 'route' => '/v2/subscriptions/:subscriptionId/:typeId'],
 
     /**
      * List transactions
