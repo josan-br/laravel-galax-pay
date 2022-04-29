@@ -8,7 +8,7 @@ use JosanBr\GalaxPay\Http\Config;
 
 class File extends Session implements ContractsSession
 {
-    private const GALAX_PAY_SESSIONS = 'galax_pay_sessions.json';
+    const GALAX_PAY_SESSIONS = 'galax_pay_sessions.json';
 
     /**
      * @param \JosanBr\GalaxPay\Http\Config $config
@@ -35,11 +35,6 @@ class File extends Session implements ContractsSession
     public function expired(): bool
     {
         return is_null($this->get('expiresIn')) || $this->get('expiresIn') <= time();
-    }
-
-    public function getClientCredentials(): array
-    {
-        return [$this->config->get('credentials.galax_id'), $this->config->get('credentials.galax_hash')];
     }
 
     public function updateOrCreate($clientId, $values = []): void

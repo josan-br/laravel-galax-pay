@@ -50,11 +50,13 @@ class Database extends Session implements ContractsSession
         return is_null($this->get('expiresIn')) || $this->get('expiresIn') <= time();
     }
 
-    public function getClientCredentials(): array
+    public function getClientCredentials($clientId = null): array
     {
+        if (is_null($clientId)) throw new \Exception('The clientId can not be null.', 1);
+
         $Client = $this->clientsTable['model'];
 
-        $client = $Client::findOrFail($this->get('clientId'));
+        $client = $Client::findOrFail($clientId);
 
         return [$client[$this->clientsTable['galax_id']], $client[$this->clientsTable['galax_hash']]];
     }

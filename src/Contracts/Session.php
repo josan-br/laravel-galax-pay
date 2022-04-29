@@ -16,9 +16,9 @@ interface Session
 
     public function checkSession($clientId): void;
 
-    public function getClientCredentials(): array;
+    public function getClientCredentials($clientId = null): array;
 
-    public function getCredentials(): array;
+    public function getPartnerCredentials(): array;
 
     public function updateOrCreate($clientId, $values = []): void;
 

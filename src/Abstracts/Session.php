@@ -45,9 +45,14 @@ abstract class Session
         return is_null($this->get('expiresIn')) || $this->get('expiresIn') <= time();
     }
 
-    public function getCredentials(): array
+    public function getClientCredentials($clientId = null): array
     {
-        return [$this->config->get('credentials.galax_id'), $this->config->get('credentials.galax_hash')];
+        return [$this->config->get('credentials.client.id'), $this->config->get('credentials.client.hash')];
+    }
+
+    public function getPartnerCredentials(): array
+    {
+        return [$this->config->get('credentials.partner.id'), $this->config->get('credentials.partner.hash')];
     }
 
     protected function clear()
