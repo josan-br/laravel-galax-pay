@@ -55,7 +55,7 @@ final class Auth
         if ($this->config->get('session_driver') == 'database') {
             $this->session = new \JosanBr\GalaxPay\Sessions\Database($this->config);
         } else {
-            $this->clientId = $this->config->get('credentials.galax_id');
+            $this->clientId = $this->config->get('credentials.client.id');
             $this->session = new \JosanBr\GalaxPay\Sessions\File($this->config);
         }
 
@@ -111,10 +111,10 @@ final class Auth
         $options = ['json' => ['grant_type' => 'authorization_code', 'scope' => $this->config->get('scopes')]];
 
         if ($this->authAsPartner) {
-            $options['auth'] = $this->session->getClientCredentials();
-            $options['headers'] = ['AuthorizationPartner' => ' ' . base64_encode(join(':', $this->session->getCredentials()))];
+            $options['auth'] = $this->session->getClientCredentials($this->clientId);
+            $options['headers'] = ['AuthorizationPartner' => ' ' . base64_encode(join(':', $this->session->getPartnerCredentials()))];
         } else {
-            $options['auth'] = $this->session->getCredentials();
+            $options['auth'] = $this->session->getClientCredentials();
         }
 
         $response = $this->request->send($endpoint['method'], $endpoint['route'], $options);
