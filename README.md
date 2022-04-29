@@ -130,6 +130,4 @@ $data = GalaxPay::endpointName([
 ]);
 ```
 
-A classe QueryParams possui apenas os parâmetros comuns entre os endpoints de busca de dados, porém você pode passar parâmetros específicos normalmente que serão utilizados.
-
-To see the parameters that each endpoint accepts, go to [Galax Pay documentation](https://docs.galaxpay.com.br).
+The QueryParams class has only the common parameters between the data fetching endpoints, to see all the parameters that each endpoint accepts, consult the [Galax Pay documentation.](https://docs.galaxpay.com.br)
