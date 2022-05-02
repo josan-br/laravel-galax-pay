@@ -37,14 +37,4 @@ class TestCase extends Orchestra
             'hash' => '83Mw5u8988Qj6fZqS4Z8K7LzOo1j28S706R0BeFe'
         ]);
     }
-
-    /**
-     * Define database migrations.
-     *
-     * @return void
-     */
-    protected function defineDatabaseMigrations()
-    {
-        $this->loadMigrationsFrom(__DIR__ . '/migrations');
-    }
 }
