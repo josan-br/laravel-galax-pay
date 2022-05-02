@@ -1,13 +1,11 @@
 <?php
 
-namespace JosanBr\GalaxPay\Tests;
+namespace JosanBr\GalaxPay\Tests\AsClient;
 
 use Orchestra\Testbench\TestCase as Orchestra;
 
 class TestCase extends Orchestra
 {
-    use \Illuminate\Foundation\Testing\RefreshDatabase;
-
     /**
      * @param \Illuminate\Foundation\Application $app
      *
@@ -26,16 +24,6 @@ class TestCase extends Orchestra
      */
     protected function defineEnvironment($app)
     {
-        $app['config']->set('galax_pay', require __DIR__ . '/../config/galax_pay.php');
-    }
-
-    /**
-     * Define database migrations.
-     *
-     * @return void
-     */
-    protected function defineDatabaseMigrations()
-    {
-        $this->loadMigrationsFrom(__DIR__ . '/migrations');
+        $app['config']->set('galax_pay', require __DIR__ . '/../../config/galax_pay.php');
     }
 }
