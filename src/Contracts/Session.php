@@ -14,13 +14,13 @@ interface Session
 
     public function expired(): bool;
 
-    public function checkSession($clientId): bool;
+    public function checkSession($clientGalaxId): bool;
 
-    public function getClientCredentials($clientId = null): array;
+    public function getClientCredentials($clientGalaxId = null): array;
 
     public function getPartnerCredentials(): array;
 
-    public function updateOrCreate($clientId, $values = []): void;
+    public function updateOrCreate($clientGalaxId, $values = []): void;
 
-    public function remove($clientId): bool;
+    public function remove($clientGalaxId): bool;
 }

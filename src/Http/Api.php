@@ -100,8 +100,8 @@ final class Api
         $route = $this->resolve($endpoint, $arguments);
 
         try {
-            if (isset($arguments[0]['clientId']))
-                $this->auth->setClientId($arguments[0]['clientId']);
+            if (isset($arguments[0]['clientGalaxId']))
+                $this->auth->setClientGalaxId($arguments[0]['clientGalaxId']);
 
             if ($this->auth->sessionExpired())
                 $this->auth->authenticate();

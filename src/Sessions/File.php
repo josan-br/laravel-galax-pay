@@ -20,30 +20,30 @@ class File extends Session implements ContractsSession
         $this->setSessions();
     }
 
-    public function checkSession($clientId): bool
+    public function checkSession($clientGalaxId): bool
     {
-        $session = $this->sessions->where('clientId', $clientId)->first();
+        $session = $this->sessions->where('clientGalaxId', $clientGalaxId)->first();
 
         if ($session) {
             foreach (array_keys($this->session) as $key)
                 $this->set($key, data_get($session, $key));
         } else $this->clear();
 
-        $this->set('clientId', $clientId);
+        $this->set('clientGalaxId', $clientGalaxId);
 
         return empty($session) || is_null($session) ? false : true;
     }
 
-    public function updateOrCreate($clientId, $values = []): void
+    public function updateOrCreate($clientGalaxId, $values = []): void
     {
-        $sessionKey = $this->sessions->search(function ($item) use ($clientId) {
-            return $item['clientId'] == $clientId;
+        $sessionKey = $this->sessions->search(function ($item) use ($clientGalaxId) {
+            return $item['clientGalaxId'] == $clientGalaxId;
         });
 
         foreach (array_keys($this->session) as $key)
             $this->set($key, data_get($values, $key));
 
-        $this->set('clientId', $clientId);
+        $this->set('clientGalaxId', $clientGalaxId);
 
         if ($sessionKey) {
             $this->sessions = $this->sessions->map(function ($item, $key) use ($sessionKey) {
@@ -55,17 +55,17 @@ class File extends Session implements ContractsSession
         file_put_contents($this->getDirectory(), $this->sessions->toJson());
     }
 
-    public function remove($clientId): bool
+    public function remove($clientGalaxId): bool
     {
-        $sessionKey = $this->sessions->search(function ($item) use ($clientId) {
-            return $item['clientId'] == $clientId;
+        $sessionKey = $this->sessions->search(function ($item) use ($clientGalaxId) {
+            return $item['clientGalaxId'] == $clientGalaxId;
         });
 
         $this->sessions->pull($sessionKey);
 
         file_put_contents($this->getDirectory(), $this->sessions->toJson());
 
-        return $this->sessions->firstWhere('clientId', '=', $clientId)->count() == 0;
+        return $this->sessions->firstWhere('clientGalaxId', '=', $clientGalaxId)->count() == 0;
     }
 
     private function getDirectory(): string
@@ -83,6 +83,6 @@ class File extends Session implements ContractsSession
 
         $content = json_decode(file_get_contents($this->getDirectory()), true);
 
-        $this->sessions = $this->sessions->merge($content)->sortBy('clientId');
+        $this->sessions = $this->sessions->merge($content)->sortBy('clientGalaxId');
     }
 }

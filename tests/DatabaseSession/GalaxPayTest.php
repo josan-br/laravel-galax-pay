@@ -63,7 +63,7 @@ class GalaxPayTest extends TestCase
 
         $client = $this->createGalaxPayClient();
 
-        $auth->setClientId($client->galax_id);
+        $auth->setClientGalaxId($client->galax_id);
 
         if ($auth->sessionExpired())
             $auth->authenticate();
@@ -84,7 +84,7 @@ class GalaxPayTest extends TestCase
         $client = $this->createGalaxPayClient();
 
         $response = GalaxPay::listCustomers([
-            'clientId' => $client->galax_id,
+            'clientGalaxId' => $client->galax_id,
             'query' => GalaxPay::queryParams(['limit' => 10])
         ]);
 
@@ -101,7 +101,7 @@ class GalaxPayTest extends TestCase
         $client = $this->createGalaxPayClient();
 
         $response = GalaxPay::createSubscription([
-            'clientId' => $client->galax_id,
+            'clientGalaxId' => $client->galax_id,
             'data' => [
                 "myId" => $myId,
                 "value" => 12999,

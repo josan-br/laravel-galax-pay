@@ -30,9 +30,9 @@ class Database extends Session implements ContractsSession
         $this->setSessions();
     }
 
-    public function checkSession($clientId): bool
+    public function checkSession($clientGalaxId): bool
     {
-        $session = $this->sessions->firstWhere('galaxPayClient.galax_id', '=',  $clientId);
+        $session = $this->sessions->firstWhere('galaxPayClient.galax_id', '=',  $clientGalaxId);
 
         if ($session) {
             $this->set('scope', $session[$this->sessionsTable['scope']]);
@@ -41,25 +41,25 @@ class Database extends Session implements ContractsSession
             $this->set('accessToken', $session[$this->sessionsTable['access_token']]);
         } else $this->clear();
 
-        $this->set('clientId', $clientId);
+        $this->set('clientGalaxId', $clientGalaxId);
 
         return empty($session) || is_null($session) ? false : true;
     }
 
-    public function getClientCredentials($clientId = null): array
+    public function getClientCredentials($clientGalaxId = null): array
     {
-        if (is_null($clientId)) throw new \Exception('The clientId can not be null.', 1);
+        if (is_null($clientGalaxId)) throw new \Exception('The clientGalaxId can not be null.', 1);
 
-        $client = $this->getClient($clientId);
+        $client = $this->getClient($clientGalaxId);
 
         return [$client[$this->clientsTable['galax_id']], $client[$this->clientsTable['galax_hash']]];
     }
 
-    public function updateOrCreate($clientId, $values = []): void
+    public function updateOrCreate($clientGalaxId, $values = []): void
     {
         $Session = $this->sessionsTable['model'];
 
-        $client = $this->getClient($clientId);
+        $client = $this->getClient($clientGalaxId);
 
         /** @var \JosanBr\GalaxPay\Models\GalaxPaySession */
         $session = $Session::updateOrCreate([
@@ -84,35 +84,35 @@ class Database extends Session implements ContractsSession
             });
         }
 
-        $this->session = collect($values)->merge(compact('clientId'))->all();
+        $this->session = collect($values)->merge(compact('clientGalaxId'))->all();
     }
 
-    public function remove($clientId): bool
+    public function remove($clientGalaxId): bool
     {
         $Session = $this->sessionsTable['model'];
 
-        $session = $Session::whereHas('galaxPayClient', function ($query) use ($clientId) {
-            return $query->where('galax_id', $clientId);
+        $session = $Session::whereHas('galaxPayClient', function ($query) use ($clientGalaxId) {
+            return $query->where('galax_id', $clientGalaxId);
         })->firstOrFail();
 
         if ($session->delete()) {
-            $sessionKey = $this->sessions->search(function ($session) use ($clientId) {
-                return $session['galaxPayClient']['galax_id'] ==  $clientId;
+            $sessionKey = $this->sessions->search(function ($session) use ($clientGalaxId) {
+                return $session['galaxPayClient']['galax_id'] ==  $clientGalaxId;
             });
 
             $this->sessions->pull($sessionKey);
         }
 
-        return $this->sessions->firstWhere('galaxPayClient.galax_id', '=', $clientId)->count() == 0;
+        return $this->sessions->firstWhere('galaxPayClient.galax_id', '=', $clientGalaxId)->count() == 0;
     }
 
     /** 
      * @return \JosanBr\GalaxPay\Models\GalaxPayClient 
      */
-    private function getClient($galaxId)
+    private function getClient($clientGalaxId)
     {
         $Client = $this->clientsTable['model'];
-        return $Client::where('galax_id', $galaxId)->firstOrFail();
+        return $Client::where('galax_id', $clientGalaxId)->firstOrFail();
     }
 
     private function setClientsTable()

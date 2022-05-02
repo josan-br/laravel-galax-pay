@@ -90,10 +90,10 @@ If using standard authentication, `auth_as_partner = false`, just call an endpoi
 $data = GalaxPay::listCustomers();
 ```
 
-If you use auth_as_partner = true partner authentication, you must pass the client ID as an argument:
+If you use auth_as_partner=true partner authentication, you must pass the client's galax_id as an argument:
 
 ```php
-$data = GalaxPay::listCustomers(['clientId' => $clientId]);
+$data = GalaxPay::listCustomers(['clientGalaxId' => $clientGalaxId]);
 ```
 
 You can see the available endpoints [here](https://github.com/josan-br/laravel-galax-pay/blob/master/config/endpoints.php).
