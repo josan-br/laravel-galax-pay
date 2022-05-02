@@ -46,11 +46,6 @@ class Database extends Session implements ContractsSession
         return empty($session) || is_null($session) ? false : true;
     }
 
-    public function expired(): bool
-    {
-        return is_null($this->get('expiresIn')) || $this->get('expiresIn') <= time();
-    }
-
     public function getClientCredentials($clientId = null): array
     {
         if (is_null($clientId)) throw new \Exception('The clientId can not be null.', 1);
