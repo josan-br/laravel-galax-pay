@@ -43,31 +43,16 @@ final class Api
     /**
      * Initialize Galax Pay Api
      * 
-     * @param \JosanBr\GalaxPay\Http\Auth|null $auth
      * @param \JosanBr\GalaxPay\Http\Config|null $config
      * @return void
      */
-    public function __construct(Auth $auth = null, Config $config = null)
+    public function __construct(Config $config = null)
     {
-        $this->auth = $auth;
         $this->config = $config;
         $this->options = $this->config->options();
+
+        $this->auth = new Auth($this->config);
         $this->request = new Request($this->options);
-    }
-
-    /**
-     * Set auth
-     * 
-     * @param \JosanBr\GalaxPay\Http\Auth $auth
-     * @return $this
-     */
-    public function setAuth(Auth $auth)
-    {
-        $this->auth = $auth;
-
-        $this->setAuthorizationHeader();
-
-        return $this;
     }
 
     /**
@@ -115,6 +100,9 @@ final class Api
         $route = $this->resolve($endpoint, $arguments);
 
         try {
+            if (isset($arguments[0]['clientGalaxId']))
+                $this->auth->setClientGalaxId($arguments[0]['clientGalaxId']);
+
             if ($this->auth->sessionExpired())
                 $this->auth->authenticate();
 

@@ -68,8 +68,10 @@ GALAX_PAY_ENV=
 GALAX_PAY_URL_PRODUCTION=
 GALAX_PAY_URL_SANDBOX=
 GALAX_PAY_AUTH_AS_PARTNER=
-GALAX_PAY_ID=
-GALAX_PAY_HASH=
+GALAX_PAY_CLIENT_ID=
+GALAX_PAY_CLIENT_HASH=
+GALAX_PAY_PARTNER_ID=
+GALAX_PAY_PARTNER_HASH=
 GALAX_PAY_WEBHOOK_HASH=
 GALAX_PAY_SESSION_DRIVER=
 ```
@@ -88,16 +90,10 @@ If using standard authentication, `auth_as_partner = false`, just call an endpoi
 $data = GalaxPay::listCustomers();
 ```
 
-If using partner authentication `auth_as_partner = true`, you must inform which client credentials will be used, for this do:
+If you use auth_as_partner=true partner authentication, you must pass the client's galax_id as an argument:
 
 ```php
-GalaxPay::switchClientInSession($clientId);
-```
-
-After that call the endpoint:
-
-```php
-$data = GalaxPay::listCustomers();
+$data = GalaxPay::listCustomers(['clientGalaxId' => $clientGalaxId]);
 ```
 
 You can see the available endpoints [here](https://github.com/josan-br/laravel-galax-pay/blob/master/config/endpoints.php).
@@ -130,6 +126,4 @@ $data = GalaxPay::endpointName([
 ]);
 ```
 
-The QueryParams class only has the common parameters between the data fetching endpoints, but you can pass specific parameters normally that will be used.
-
-To see the parameters that each endpoint accepts, go to [Galax Pay documentation](https://docs.galaxpay.com.br).
+The QueryParams class has only the common parameters between the data fetching endpoints, to see all the parameters that each endpoint accepts, consult the [Galax Pay documentation.](https://docs.galaxpay.com.br)

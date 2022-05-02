@@ -3,7 +3,6 @@
 namespace JosanBr\GalaxPay;
 
 use JosanBr\GalaxPay\Http\Api;
-use JosanBr\GalaxPay\Http\Auth;
 use JosanBr\GalaxPay\Http\Config;
 use JosanBr\GalaxPay\QueryParams;
 
@@ -18,13 +17,6 @@ class GalaxPay
      * @var \JosanBr\GalaxPay\Http\Api
      */
     private $api;
-
-    /**
-     * Auth instance
-     * 
-     * @var \JosanBr\GalaxPay\Http\Auth
-     */
-    private $auth;
 
     /**
      * Config instance
@@ -42,9 +34,7 @@ class GalaxPay
     {
         $this->config = new Config(config('galax_pay'));
 
-        $this->auth = new Auth($this->config);
-
-        $this->api = new Api($this->auth, $this->config);
+        $this->api = new Api($this->config);
     }
 
     /**
@@ -69,19 +59,6 @@ class GalaxPay
     public function getConfig(string $key, $default = null)
     {
         return $this->config->get($key, $default);
-    }
-
-    /**
-     * Switch client in session
-     * 
-     * @param int|string $clientId
-     * @return void
-     */
-    public function switchClientInSession($clientId)
-    {
-        $this->auth = $this->auth->switchClientInSession($clientId);
-
-        $this->api->setAuth($this->auth);
     }
 
     /**

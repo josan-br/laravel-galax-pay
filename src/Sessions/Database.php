@@ -30,10 +30,9 @@ class Database extends Session implements ContractsSession
         $this->setSessions();
     }
 
-    public function checkSession($clientId): void
+    public function checkSession($clientGalaxId): bool
     {
-        $session = $this->sessions
-            ->where($this->sessionsTable['client_id'], $clientId)->first();
+        $session = $this->sessions->firstWhere('galaxPayClient.galax_id', '=',  $clientGalaxId);
 
         if ($session) {
             $this->set('scope', $session[$this->sessionsTable['scope']]);
@@ -42,65 +41,78 @@ class Database extends Session implements ContractsSession
             $this->set('accessToken', $session[$this->sessionsTable['access_token']]);
         } else $this->clear();
 
-        $this->set('clientId', $clientId);
+        $this->set('clientGalaxId', $clientGalaxId);
+
+        return empty($session) || is_null($session) ? false : true;
     }
 
-    public function expired(): bool
+    public function getClientCredentials($clientGalaxId = null): array
     {
-        return is_null($this->get('expiresIn')) || $this->get('expiresIn') <= time();
-    }
+        if (is_null($clientGalaxId)) throw new \Exception('The clientGalaxId can not be null.', 1);
 
-    public function getClientCredentials(): array
-    {
-        $Client = $this->clientsTable['model'];
-
-        $client = $Client::findOrFail($this->get('clientId'));
+        $client = $this->getClient($clientGalaxId);
 
         return [$client[$this->clientsTable['galax_id']], $client[$this->clientsTable['galax_hash']]];
     }
 
-    public function updateOrCreate($clientId, $values = []): void
+    public function updateOrCreate($clientGalaxId, $values = []): void
     {
         $Session = $this->sessionsTable['model'];
 
+        $client = $this->getClient($clientGalaxId);
+
         /** @var \JosanBr\GalaxPay\Models\GalaxPaySession */
         $session = $Session::updateOrCreate([
-            $this->sessionsTable['client_id'] => $clientId
+            $this->sessionsTable['client_id'] => $client->id
         ], [
-            $this->sessionsTable['client_id'] => $clientId,
+            $this->sessionsTable['client_id'] => $client->id,
             $this->sessionsTable['scope'] => $values['scope'],
             $this->sessionsTable['expires_in'] => $values['expiresIn'],
             $this->sessionsTable['token_type'] => $values['tokenType'],
             $this->sessionsTable['access_token'] => $values['accessToken']
         ]);
 
+        $session->load('galaxPayClient');
+
         if ($session->wasRecentlyCreated) {
             $this->sessions->push($session);
         } else {
             $this->sessions = $this->sessions->map(function ($item) use ($session) {
-                if ($item['clientId'] == $session['clientId']) return $session;
-                return $item;
+                $itemGalaxId = $item['galaxPayClient']['galaxId'];
+                $sessionGalaxId = $session['galaxPayClient']['galaxId'];
+                return $itemGalaxId == $sessionGalaxId ? $session : $item;
             });
         }
 
-        $this->session = collect($values)->merge(compact('clientId'))->all();
+        $this->session = collect($values)->merge(compact('clientGalaxId'))->all();
     }
 
-    public function remove($clientId): bool
+    public function remove($clientGalaxId): bool
     {
         $Session = $this->sessionsTable['model'];
 
-        $session = $Session::where($this->sessionsTable['client_id'], $clientId)->first();
+        $session = $Session::whereHas('galaxPayClient', function ($query) use ($clientGalaxId) {
+            return $query->where('galax_id', $clientGalaxId);
+        })->firstOrFail();
 
-        if ($session && $session->delete()) {
-            $sessionKey = $this->sessions->search(function ($item) use ($clientId) {
-                return $item['clientId'] == $clientId;
+        if ($session->delete()) {
+            $sessionKey = $this->sessions->search(function ($session) use ($clientGalaxId) {
+                return $session['galaxPayClient']['galax_id'] ==  $clientGalaxId;
             });
 
             $this->sessions->pull($sessionKey);
         }
 
-        return $this->sessions->firstWhere('clientId', '=', $clientId)->count() == 0;
+        return $this->sessions->firstWhere('galaxPayClient.galax_id', '=', $clientGalaxId)->count() == 0;
+    }
+
+    /** 
+     * @return \JosanBr\GalaxPay\Models\GalaxPayClient 
+     */
+    private function getClient($clientGalaxId)
+    {
+        $Client = $this->clientsTable['model'];
+        return $Client::where('galax_id', $clientGalaxId)->firstOrFail();
     }
 
     private function setClientsTable()
@@ -124,6 +136,6 @@ class Database extends Session implements ContractsSession
 
         $Session = $this->sessionsTable['model'];
 
-        $this->sessions = $Session::all();
+        $this->sessions = $Session::with('galaxPayClient')->get();
     }
 }

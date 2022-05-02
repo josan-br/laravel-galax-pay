@@ -14,11 +14,11 @@ final class Auth
     private $authAsPartner;
 
     /**
-     * Client ID in session
+     * Client Galax Id from galax_pay_clients table
      * 
      * @var int|string
      */
-    private $clientId;
+    private $clientGalaxId;
 
     /**
      * Config current instance
@@ -55,24 +55,26 @@ final class Auth
         if ($this->config->get('session_driver') == 'database') {
             $this->session = new \JosanBr\GalaxPay\Sessions\Database($this->config);
         } else {
-            $this->clientId = $this->config->get('credentials.galax_id');
+            $this->clientGalaxId = $this->config->get('credentials.client.id');
             $this->session = new \JosanBr\GalaxPay\Sessions\File($this->config);
         }
 
-        $this->session->checkSession($this->clientId);
+        $this->session->checkSession($this->clientGalaxId);
     }
 
     /**
      * Switch client in session
      * 
-     * @param int|string $clientId
+     * @param int|string $clientGalaxId
      * @return $this
      */
-    public function switchClientInSession($clientId)
+    public function setClientGalaxId($clientGalaxId)
     {
-        $this->clientId = $clientId;
+        $this->clientGalaxId = $clientGalaxId;
 
-        $this->session->checkSession($this->clientId);
+        if (!$this->session->checkSession($this->clientGalaxId)) {
+            $this->authenticate();
+        }
 
         return $this;
     }
@@ -111,17 +113,17 @@ final class Auth
         $options = ['json' => ['grant_type' => 'authorization_code', 'scope' => $this->config->get('scopes')]];
 
         if ($this->authAsPartner) {
-            $options['auth'] = $this->session->getClientCredentials();
-            $options['headers'] = ['AuthorizationPartner' => ' ' . base64_encode(join(':', $this->session->getCredentials()))];
+            $options['auth'] = $this->session->getClientCredentials($this->clientGalaxId);
+            $options['headers'] = ['AuthorizationPartner' => ' ' . base64_encode(join(':', $this->session->getPartnerCredentials()))];
         } else {
-            $options['auth'] = $this->session->getCredentials();
+            $options['auth'] = $this->session->getClientCredentials();
         }
 
         $response = $this->request->send($endpoint['method'], $endpoint['route'], $options);
 
         $expiresIn = data_get($response, 'expires_in', $this->session->expiresIn);
 
-        $this->session->updateOrCreate($this->clientId, [
+        $this->session->updateOrCreate($this->clientGalaxId, [
             'expiresIn' => $expiresIn + time(),
             'scope' => data_get($response, 'scope', null),
             'accessToken' => data_get($response, 'access_token', null),

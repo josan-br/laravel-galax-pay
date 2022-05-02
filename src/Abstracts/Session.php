@@ -23,7 +23,7 @@ abstract class Session
     /**
      * @var array
      */
-    protected $session = ['clientId' => null, 'tokenType' => null, 'accessToken' => null, 'expiresIn' => null, 'scope' => null];
+    protected $session = ['clientGalaxId' => null, 'tokenType' => null, 'accessToken' => null, 'expiresIn' => null, 'scope' => null];
 
     public function __construct(Config $config)
     {
@@ -45,14 +45,22 @@ abstract class Session
         return is_null($this->get('expiresIn')) || $this->get('expiresIn') <= time();
     }
 
-    public function getCredentials(): array
+    /**
+     * @param int|string|null $clientGalaxId galax_id from the galax_pay_clients table
+     */
+    public function getClientCredentials($clientGalaxId = null): array
     {
-        return [$this->config->get('credentials.galax_id'), $this->config->get('credentials.galax_hash')];
+        return [$this->config->get('credentials.client.id'), $this->config->get('credentials.client.hash')];
+    }
+
+    public function getPartnerCredentials(): array
+    {
+        return [$this->config->get('credentials.partner.id'), $this->config->get('credentials.partner.hash')];
     }
 
     protected function clear()
     {
-        $this->session = ['clientId' => null, 'tokenType' => null, 'accessToken' => null, 'expiresIn' => null, 'scope' => null];
+        $this->session = ['clientGalaxId' => null, 'tokenType' => null, 'accessToken' => null, 'expiresIn' => null, 'scope' => null];
     }
 
     protected function get($key)

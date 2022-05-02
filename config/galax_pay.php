@@ -24,9 +24,14 @@ return [
      | Galax Pay Partner
      |--------------------------------------------------------------------------
      |
-     | This value determines whether authentication in Galax Pay API will
-     | be as a partner, if so, change the session_driver to 'database' 
-     | and put your partner credentials in the 'credentials'.
+     | This value defines the Galax Pay API authentication as a partner.
+     | 
+     | If you are only going to work with one client, change the 'session_driver'
+     | to 'file' and put your credentials in credentials.partner and the client's
+     | in credentials.client.
+     |
+     | If you are going to work with more than one client, change the 'session_driver'
+     | to 'database' and publish the migrations.
      |
      */
 
@@ -34,17 +39,28 @@ return [
 
     /*
      |-------------------------------------------------------------------------- 
-     | Your Galax Pay credentials
+     | Galax Pay Credentials
      |--------------------------------------------------------------------------
      |
-     | After creating a Galax Pay account you receive a 
-     | 'galax_id' and a 'galax_hash' for API authentication.
+     | After creating a Galax Pay account, you are given a 
+     | 'galax_id' and a 'galax_hash' to authenticate to the API.
+     | 
+     | If you are authenticating as a partner, put your credentials in 
+     | 'credentials.partner' and if you are only working with one client, 
+     | put the client's credentials in 'credentials.client'. Otherwise, 
+     | put your credentials in 'credentials.client'.
      |
      */
 
     'credentials' => [
-        'galax_id' => env('GALAX_PAY_ID', '5473'),
-        'galax_hash' => env('GALAX_PAY_HASH', '83Mw5u8988Qj6fZqS4Z8K7LzOo1j28S706R0BeFe'),
+        'client' => [
+            'id' => env('GALAX_PAY_CLIENT_ID', null),
+            'hash' => env('GALAX_PAY_CLIENT_HASH', null),
+        ],
+        'partner' => [
+            'id' => env('GALAX_PAY_PARTNER_ID', null),
+            'hash' => env('GALAX_PAY_PARTNER_HASH', null),
+        ]
     ],
 
     /*
@@ -76,10 +92,10 @@ return [
      | Galax Pay Session Driver
      |--------------------------------------------------------------------------
      |
-     | This value determines whether authentication sections will be saved to
-     | 'file' or 'database'. Session driver: database, should be used when 
-     | authentication via partner and galax_id and galax_hash of clients
-     | should be saved in galax_pay_clients table.
+     | This value determines whether authentication sections will be saved in 
+     | 'file' or 'database'. Session driver: database, must be used when 
+     | authentication is with partner and you are working with more than 
+     | one customer, customer credentials must be saved in galax_pay_clients table.
      |
      */
 

@@ -19,27 +19,10 @@ use JosanBr\GalaxPay\Abstracts\Model;
  * @property Transaction[] $Transactions
  * @property PaymentMethodCreditCard $PaymentMethodCreditCard
  * @property PaymentMethodBoleto $PaymentMethodBoleto
+ * @property PaymentMethodPix $PaymentMethodPix
  */
 class Subscription extends Model
 {
-    public const PAY_WITH_BILLET = 'boleto';
-
-    public const PAY_WITH_CREDIT_CARD = 'creditcard';
-
-    public const PERIOD_WEEKLY = 'weekly';
-
-    public const PERIOD_BIWEEKLY = 'biweekly';
-
-    public const PERIOD_MONTHLY = 'monthly';
-
-    public const PERIOD_BIMONTHLY = 'bimonthly';
-
-    public const PERIOD_QUARTERLY = 'quarterly';
-
-    public const PERIOD_BIANNUAL = 'biannual';
-
-    public const PERIOD_YEARLY = 'yearly';
-
     public const STATUS_ACTIVE = 'active';
 
     public const STATUS_CANCELED = 'canceled';
@@ -63,18 +46,20 @@ class Subscription extends Model
         'additionalInfo',
         'status',
         'Customer',
-        'Transactions',
         'PaymentMethodCreditCard',
-        'PaymentMethodBoleto'
+        'PaymentMethodBoleto',
+        'PaymentMethodPix',
+        'Transactions'
     ];
 
     /**
      * @var string[]
      */
     protected $modelRefs = [
-        'Customer' => Customer::class,
-        'Transactions' => Transaction::class,
-        'PaymentMethodCreditCard' => PaymentMethodCreditCard::class,
-        'PaymentMethodBoleto' => PaymentMethodBoleto::class,
+        'Customer'                => Customer::class,
+        'Transactions'            => Transaction::class,
+        'PaymentMethodPix'        => PaymentMethodPix::class,
+        'PaymentMethodBoleto'     => PaymentMethodBoleto::class,
+        'PaymentMethodCreditCard' => PaymentMethodCreditCard::class
     ];
 }

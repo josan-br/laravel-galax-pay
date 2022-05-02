@@ -5,19 +5,32 @@ namespace JosanBr\GalaxPay\Models;
 use JosanBr\GalaxPay\Abstracts\Model;
 
 /**
+ * @property int $myId
  * @property int $galaxPayId
- * @property int $chargeGalaxPayId
  * @property string $chargeMyId
+ * @property int $chargeGalaxPayId
+ * @property string $subscriptionMyId
+ * @property int $subscriptionGalaxPayId
  * @property int $value
  * @property string $payday
- * @property string $paydayDate
+ * @property bool $payedOutsideGalaxPay
  * @property int $installment
+ * @property string $additionalInfo
+ * @property string $reasonDenied
+ * @property string $authorizationCode
+ * @property string $tid
+ * @property string $paydayDate
  * @property string $status
- * @property string $createdAt
  * @property string $datetimeLastSendToOperator
+ * @property int $fee
+ * @property string $statusDescription
+ * @property string $createdAt
+ * @property string $updatedAt
  * @property Boleto $Boleto
- * @property CreditCard $CreditCard
  * @property Pix $Pix
+ * @property Charge $Charge
+ * @property Subscription $Subscription
+ * @property CreditCard $CreditCard
  */
 class Transaction extends Model
 {
@@ -86,27 +99,42 @@ class Transaction extends Model
      * @var string[]
      */
     protected $fillable = [
+        'myId',
         'galaxPayId',
-        'chargeGalaxPayId',
         'chargeMyId',
+        'chargeGalaxPayId',
+        'subscriptionMyId',
+        'subscriptionGalaxPayId',
         'value',
         'payday',
-        'paydayDate',
+        'payedOutsideGalaxPay',
         'installment',
+        'additionalInfo',
+        'reasonDenied',
+        'authorizationCode',
+        'tid',
+        'paydayDate',
         'status',
-        'createdAt',
         'datetimeLastSendToOperator',
+        'fee',
+        'statusDescription',
+        'createdAt',
+        'updatedAt',
         'Boleto',
+        'Pix',
+        'Charge',
+        'Subscription',
         'CreditCard',
-        'Pix'
     ];
 
     /**
      * @var string[]
      */
     protected $modelRefs = [
+        'Pix' => Pix::class,
         'Boleto' => Boleto::class,
+        'Charge' => Charge::class,
         'CreditCard' => CreditCard::class,
-        'Pix' => Pix::class
+        'Subscription' => Subscription::class,
     ];
 }

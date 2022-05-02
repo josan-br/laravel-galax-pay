@@ -8,14 +8,27 @@
     </coverage>
 
     <testsuites>
-        <testsuite name="Galax Pay Test Suite">
-            <directory>tests</directory>
+        <testsuite name="Galax Pay As Client">
+            <directory>tests/AsClient</directory>
+        </testsuite>
+
+        <testsuite name="Galax Pay As Partner">
+            <directory>tests/AsPartner</directory>
+        </testsuite>
+
+        <testsuite name="Galax Pay Database Session">
+            <directory>tests/DatabaseSession</directory>
         </testsuite>
     </testsuites>
 
     <php>
+        <env name="APP_KEY" value="base64:RZzyjK/jSV33DDipm8tscveMwbFEaVqdrXRXub7u8NA="/>
+
         <env name="CACHE_DRIVER" value="array"/>
+
         <env name="DB_CONNECTION" value="testing"/>
-        <env name="APP_KEY" value="AckfSECXIvnK5r28GVIWUAxmbBSjTsmF"/>
+
+        <env name="GALAX_PAY_CLIENT_ID" value="5473"/>
+        <env name="GALAX_PAY_CLIENT_HASH" value="83Mw5u8988Qj6fZqS4Z8K7LzOo1j28S706R0BeFe"/>
     </php>
 </phpunit>
