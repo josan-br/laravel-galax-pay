@@ -22,12 +22,11 @@
     </testsuites>
 
     <php>
-        <env name="APP_KEY" value="AckfSECXIvnK5r28GVIWUAxmbBSjTsmF"/>
+        <env name="APP_KEY" value="base64:RZzyjK/jSV33DDipm8tscveMwbFEaVqdrXRXub7u8NA="/>
 
         <env name="CACHE_DRIVER" value="array"/>
 
         <env name="DB_CONNECTION" value="testing"/>
-        <env name="DB_FOREIGN_KEYS" value="true"/>
 
         <env name="GALAX_PAY_CLIENT_ID" value="5473"/>
         <env name="GALAX_PAY_CLIENT_HASH" value="83Mw5u8988Qj6fZqS4Z8K7LzOo1j28S706R0BeFe"/>
