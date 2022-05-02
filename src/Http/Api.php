@@ -115,6 +115,9 @@ final class Api
         $route = $this->resolve($endpoint, $arguments);
 
         try {
+            if (isset($arguments['clientId']))
+                $this->auth->setClientId($arguments['clientId']);
+
             if ($this->auth->sessionExpired())
                 $this->auth->authenticate();
 

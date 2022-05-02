@@ -72,19 +72,6 @@ class GalaxPay
     }
 
     /**
-     * Switch client in session
-     * 
-     * @param int|string $clientId
-     * @return void
-     */
-    public function switchClientInSession($clientId)
-    {
-        $this->auth = $this->auth->switchClientInSession($clientId);
-
-        $this->api->setAuth($this->auth);
-    }
-
-    /**
      * Add more information to the request
      * 
      * @param array $options

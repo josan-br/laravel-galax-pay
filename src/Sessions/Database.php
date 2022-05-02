@@ -30,7 +30,7 @@ class Database extends Session implements ContractsSession
         $this->setSessions();
     }
 
-    public function checkSession($clientId): void
+    public function checkSession($clientId): bool
     {
         $session = $this->sessions
             ->where($this->sessionsTable['client_id'], $clientId)->first();
@@ -43,6 +43,8 @@ class Database extends Session implements ContractsSession
         } else $this->clear();
 
         $this->set('clientId', $clientId);
+
+        return empty($session) || is_null($session) ? false : true;
     }
 
     public function expired(): bool

@@ -68,11 +68,13 @@ final class Auth
      * @param int|string $clientId
      * @return $this
      */
-    public function switchClientInSession($clientId)
+    public function setClientId($clientId)
     {
         $this->clientId = $clientId;
 
-        $this->session->checkSession($this->clientId);
+        if (!$this->session->checkSession($this->clientId)) {
+            $this->authenticate();
+        }
 
         return $this;
     }

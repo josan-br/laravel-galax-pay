@@ -14,7 +14,7 @@ interface Session
 
     public function expired(): bool;
 
-    public function checkSession($clientId): void;
+    public function checkSession($clientId): bool;
 
     public function getClientCredentials($clientId = null): array;
 
