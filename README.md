@@ -64,16 +64,16 @@ In this case, just go to `config/galax_pay.php` and define the models you want t
 Step 4. add environment variables:
 
 ```
-GALAX_PAY_ENV=
-GALAX_PAY_URL_PRODUCTION=
-GALAX_PAY_URL_SANDBOX=
-GALAX_PAY_AUTH_AS_PARTNER=
-GALAX_PAY_CLIENT_ID=
-GALAX_PAY_CLIENT_HASH=
-GALAX_PAY_PARTNER_ID=
-GALAX_PAY_PARTNER_HASH=
-GALAX_PAY_WEBHOOK_HASH=
-GALAX_PAY_SESSION_DRIVER=
+php artisan galax-pay:publish
+```
+and choose: **environment variables**
+
+```
+What will be published?:
+[0] config
+[1] environment variables
+[2] migrations
+> environment variables
 ```
 
 ## Usage
