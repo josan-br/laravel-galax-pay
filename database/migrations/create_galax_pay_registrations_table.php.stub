@@ -1,0 +1,35 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+class CreateGalaxPayRegistrationsTable extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('galax_pay_registrations', function (Blueprint $table) {
+            $table->integer('id', true, true);
+            $table->string('model');
+            $table->string('model_id');
+            $table->string('my_id')->comment('Your id on galax pay');
+            $table->string('galax_pay_id')->nullable()->comment('Id generated in galax pay');
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('galax_pay_registrations');
+    }
+}
