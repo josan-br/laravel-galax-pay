@@ -45,9 +45,12 @@ class CommandPublishTest extends TestCase
      */
     public function it_can_publish_migrations()
     {
-        $this->artisan('galax-pay:publish')
-            ->expectsChoice('What will be published?', 'migrations', static::$choices)
-            ->expectsConfirmation('Want to remove and publish again?', 'yes')
-            ->expectsOutput('Publishing migrations!');
+        $command = $this->artisan('galax-pay:publish')
+            ->expectsChoice('What will be published?', 'migrations', static::$choices);
+
+        if (count(glob(app()->databasePath('migrations/*_galax_pay_*'))))
+            $command->expectsConfirmation('Want to remove and publish again?', 'yes');
+
+        $command->expectsOutput('Publishing migrations!');
     }
 }
