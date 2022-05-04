@@ -8,6 +8,10 @@
     </coverage>
 
     <testsuites>
+        <testsuite name="Galax Pay Suite Test">
+            <file>tests/CommandPublishTest.php</file>
+        </testsuite>
+
         <testsuite name="Galax Pay As Client">
             <directory>tests/AsClient</directory>
         </testsuite>

@@ -2,10 +2,6 @@
 
 namespace JosanBr\GalaxPay;
 
-use JosanBr\GalaxPay\Http\Api;
-use JosanBr\GalaxPay\Http\Config;
-use JosanBr\GalaxPay\QueryParams;
-
 /**
  * Galax Pay Service
  */
@@ -32,9 +28,9 @@ class GalaxPay
      */
     public function __construct()
     {
-        $this->config = new Config(config('galax_pay'));
+        $this->config = new \JosanBr\GalaxPay\Http\Config(config('galax_pay'));
 
-        $this->api = new Api($this->config);
+        $this->api = new \JosanBr\GalaxPay\Http\Api($this->config);
     }
 
     /**
@@ -79,8 +75,29 @@ class GalaxPay
      * @param string[] $params
      * @return \JosanBr\GalaxPay\QueryParams
      */
-    public static function queryParams(array $params = [])
+    public function queryParams(array $params = [])
     {
-        return new QueryParams($params);
+        return new \JosanBr\GalaxPay\QueryParams($params);
+    }
+
+    /**
+     * Create data reference saved in GalaxPay in your DB
+     * 
+     * @param array $data
+     * @return \JosanBr\GalaxPay\Models\GalaxPayRegistration
+     */
+    public function register($data)
+    {
+        return \JosanBr\GalaxPay\Models\GalaxPayRegistration::create($data);
+    }
+
+    /**
+     * Generate Id
+     * 
+     * @return string
+     */
+    public function generateId()
+    {
+        return uniqid('pay-') . '.' . time();
     }
 }
