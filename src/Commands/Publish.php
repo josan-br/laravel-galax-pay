@@ -41,11 +41,14 @@ class Publish extends Command
      */
     public function handle()
     {
-        $chosen = $this->choice('What will be published?', ['config', 'migrations']);
+        $chosen = $this->choice('What will be published?', ['config', 'environment variables', 'migrations']);
 
         switch ($chosen) {
             case 'config':
                 $this->publishConfig();
+                break;
+            case 'environment variables':
+                $this->publishEnvironmentVariables();
                 break;
             case 'migrations':
                 $this->publishMigrations();
@@ -59,14 +62,53 @@ class Publish extends Command
     private function publishConfig()
     {
         try {
+            $configPath = __DIR__ . '/../../config/galax_pay.php';
+
             if (file_exists($this->configPath)) {
-                $this->error('There is already a galax_pay.php in the config folder');
-                return;
+                if ($this->confirm('The config has already been published, replace?', 'no')) {
+                    copy($configPath, $this->configPath);
+                    $this->info('Replaced configuration!');
+                }
             } else {
-                copy(__DIR__ . '/../../config/galax_pay.php', $this->configPath);
+                copy($configPath, $this->configPath);
+                $this->info('Published configuration!');
+            }
+        } catch (\Throwable $th) {
+            $this->error($th->getMessage());
+        }
+    }
+
+    private function publishEnvironmentVariables()
+    {
+        try {
+            $galaxConfig = file_get_contents(__DIR__ . '/../../config/galax_pay.php');
+
+            $matchingEnvs = glob(app()->basePath('.env*'));
+
+            foreach ($matchingEnvs as $envFilePath) {
+                $env = file_get_contents($envFilePath);
+
+                preg_match_all('/GALAX_PAY/', $env, $matchingEnv);
+
+                if (is_string($env) && is_string($galaxConfig) && count($matchingEnv[0]) == 0) {
+                    preg_match_all('/\((.*)\)/', $galaxConfig, $matchingConfig);
+
+                    foreach ($matchingConfig[1] as $config) {
+                        list($key, $value) = explode(',', preg_replace('/\s/', '', $config));
+
+                        $key = str_replace(["'", '"'], '', $key);
+                        $value = str_replace(["'", '"'], '', $value);
+
+                        $value = $value == "null" ? '' : $value;
+
+                        $env .= PHP_EOL . "${key}=${value}";
+                    }
+
+                    file_put_contents($envFilePath, "${env}\n");
+                }
             }
 
-            $this->info('Published configuration!');
+            $this->info('Published Environment Variables!');
         } catch (\Throwable $th) {
             $this->error($th->getMessage());
         }
@@ -82,6 +124,7 @@ class Publish extends Command
 
         $migrations = [
             ['create_galax_pay_clients_table.php.stub', 'create_galax_pay_clients_table.php'],
+            ['create_galax_pay_registrations_table.php.stub', 'create_galax_pay_registrations_table.php'],
             ['create_galax_pay_sessions_table.php.stub', 'create_galax_pay_sessions_table.php'],
         ];
 
