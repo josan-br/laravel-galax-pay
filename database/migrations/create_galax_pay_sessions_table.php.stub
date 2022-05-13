@@ -24,7 +24,7 @@ class CreateGalaxPaySessionsTable extends Migration
             $table->string('token_type', 15);
             $table->string('access_token');
             $table->string('expires_in');
-            $table->string('scope');
+            $table->text('scope');
             $table->timestamps();
         });
     }
