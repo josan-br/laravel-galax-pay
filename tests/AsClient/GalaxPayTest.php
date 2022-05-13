@@ -18,8 +18,8 @@ class GalaxPayTest extends TestCase
 
         $auth = new Auth($config);
 
-        if ($auth->sessionExpired())
-            $auth->authenticate();
+        if ($auth->sessionExpired($config->get('credentials.client.id')))
+            $auth->authenticate($config->get('credentials.client.id'));
 
         $filename = sys_get_temp_dir() . '/' . File::GALAX_PAY_SESSIONS;
 
@@ -45,7 +45,7 @@ class GalaxPayTest extends TestCase
      */
     public function it_can_create_subscription_with_credit_card()
     {
-        $myId = uniqid();
+        $myId = GalaxPay::generateId();
 
         $response = GalaxPay::createSubscription([
             'data' => [
