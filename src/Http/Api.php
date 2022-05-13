@@ -99,20 +99,19 @@ final class Api
 
         $route = $this->resolve($endpoint, $arguments);
 
+        $clientGalaxId = data_get($arguments, '0.clientGalaxId', $this->config->get('credentials.client.id'));
+
         try {
-            if (isset($arguments[0]['clientGalaxId']))
-                $this->auth->setClientGalaxId($arguments[0]['clientGalaxId']);
+            if ($this->auth->sessionExpired($clientGalaxId))
+                $this->auth->authenticate($clientGalaxId);
 
-            if ($this->auth->sessionExpired())
-                $this->auth->authenticate();
-
-            $this->setAuthorizationHeader();
+            $this->setAuthorizationHeader($clientGalaxId);
 
             return $this->request->send($endpoint['method'], $route, $this->options);
         } catch (AuthorizationException $e) {
-            $this->auth->authenticate();
+            $this->auth->authenticate($clientGalaxId);
 
-            $this->setAuthorizationHeader();
+            $this->setAuthorizationHeader($clientGalaxId);
 
             return $this->request->send($endpoint['method'], $route, $this->options);
         } catch (\Throwable $e) {
@@ -167,11 +166,11 @@ final class Api
      * 
      * @return void
      */
-    private function setAuthorizationHeader(): void
+    private function setAuthorizationHeader($clientGalaxId): void
     {
         $this->options['headers'] = array_merge($this->options['headers'], [
             'Accept'        => 'application/json',
-            'Authorization' => $this->auth->getAuthorizationToken()
+            'Authorization' => $this->auth->getAuthorizationToken($clientGalaxId)
         ]);
     }
 

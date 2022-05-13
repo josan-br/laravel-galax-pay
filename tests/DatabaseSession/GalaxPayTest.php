@@ -5,6 +5,8 @@ namespace JosanBr\GalaxPay\Tests\DatabaseSession;
 use JosanBr\GalaxPay\Facades\GalaxPay;
 use JosanBr\GalaxPay\Http\Auth;
 use JosanBr\GalaxPay\Http\Config;
+use JosanBr\GalaxPay\Models\GalaxPayClient;
+use JosanBr\GalaxPay\Models\GalaxPaySession;
 
 class GalaxPayTest extends TestCase
 {
@@ -29,7 +31,7 @@ class GalaxPayTest extends TestCase
         $client = $this->createGalaxPayClient();
 
         /** @var \JosanBr\GalaxPay\Models\GalaxPayClient */
-        $client = \JosanBr\GalaxPay\Models\GalaxPayClient::where('galax_id',  $client->galax_id)->firstOrFail();
+        $client = GalaxPayClient::where('galax_id',  $client->galax_id)->firstOrFail();
 
         $this->assertNotEmpty($client);
     }
@@ -41,7 +43,7 @@ class GalaxPayTest extends TestCase
     {
         $client = $this->createGalaxPayClient();
 
-        $session = \JosanBr\GalaxPay\Models\GalaxPaySession::create([
+        $session = GalaxPaySession::create([
             'galax_pay_client_id' => $client->id,
             'token_type' => 'Bearer',
             'access_token' => '4fsd5f7sd6fs6a4fsaf7saf4sa65f4sa6f7sa98',
@@ -63,12 +65,10 @@ class GalaxPayTest extends TestCase
 
         $client = $this->createGalaxPayClient();
 
-        $auth->setClientGalaxId($client->galax_id);
+        if ($auth->sessionExpired($client->galax_id))
+            $auth->authenticate($client->galax_id);
 
-        if ($auth->sessionExpired())
-            $auth->authenticate();
-
-        $session = \JosanBr\GalaxPay\Models\GalaxPaySession::whereHas('galaxPayClient', function ($query) use ($client) {
+        $session = GalaxPaySession::whereHas('galaxPayClient', function ($query) use ($client) {
             return $query->where('id', $client->id);
         })->first();
 
@@ -96,7 +96,7 @@ class GalaxPayTest extends TestCase
      */
     public function it_can_create_subscription_with_credit_card()
     {
-        $myId = uniqid();
+        $myId = GalaxPay::generateId();
 
         $client = $this->createGalaxPayClient();
 

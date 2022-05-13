@@ -2,6 +2,7 @@
 
 namespace JosanBr\GalaxPay\Sessions;
 
+use Illuminate\Support\Arr;
 use JosanBr\GalaxPay\Abstracts\Session;
 use JosanBr\GalaxPay\Contracts\Session as ContractsSession;
 use JosanBr\GalaxPay\Http\Config;
@@ -17,40 +18,50 @@ class File extends Session implements ContractsSession
     {
         parent::__construct($config);
 
-        $this->setSessions();
+        $this->loadSessions();
     }
 
-    public function checkSession($clientGalaxId): bool
+    /**
+     * @param int|string|null $clientGalaxId galax_id from the galax_pay_clients table
+     */
+    public function getClientCredentials($clientGalaxId = null): array
     {
-        $session = $this->sessions->where('clientGalaxId', $clientGalaxId)->first();
+        return [$this->config->get('credentials.client.id'), $this->config->get('credentials.client.hash')];
+    }
 
-        if ($session) {
-            foreach (array_keys($this->session) as $key)
-                $this->set($key, data_get($session, $key));
-        } else $this->clear();
+    public function getSession($clientGalaxId)
+    {
+        if ($this->sessions->count() == 0) return null;
 
-        $this->set('clientGalaxId', $clientGalaxId);
+        if (is_null($this->session) || $this->session['client_galax_id'] != $clientGalaxId) {
+            $this->session = $this->sessions->first(function ($item) use ($clientGalaxId) {
+                return $item['client_galax_id'] == $clientGalaxId;
+            });
+        }
 
-        return empty($session) || is_null($session) ? false : true;
+        return $this->session;
+    }
+
+    public function expired($clientGalaxId): bool
+    {
+        $session = $this->getSession($clientGalaxId);
+
+        if (!$session) return true;
+
+        return is_null($session['expires_in']) || $session['expires_in'] <= time();
     }
 
     public function updateOrCreate($clientGalaxId, $values = []): void
     {
+        $data = Arr::add($values, 'client_galax_id', $clientGalaxId);
+
         $sessionKey = $this->sessions->search(function ($item) use ($clientGalaxId) {
-            return $item['clientGalaxId'] == $clientGalaxId;
+            return $item['client_galax_id'] == $clientGalaxId && !empty($item['access_token']);
         });
 
-        foreach (array_keys($this->session) as $key)
-            $this->set($key, data_get($values, $key));
-
-        $this->set('clientGalaxId', $clientGalaxId);
-
-        if ($sessionKey) {
-            $this->sessions = $this->sessions->map(function ($item, $key) use ($sessionKey) {
-                if ($key == $sessionKey) return $this->session;
-                return $item;
-            });
-        } else $this->sessions->push($this->session);
+        if (!is_bool($sessionKey))
+            $this->sessions->pull($sessionKey);
+        else $this->sessions->push($data);
 
         file_put_contents($this->getDirectory(), $this->sessions->toJson());
     }
@@ -58,14 +69,14 @@ class File extends Session implements ContractsSession
     public function remove($clientGalaxId): bool
     {
         $sessionKey = $this->sessions->search(function ($item) use ($clientGalaxId) {
-            return $item['clientGalaxId'] == $clientGalaxId;
+            return $item['client_galax_id'] == $clientGalaxId;
         });
 
         $this->sessions->pull($sessionKey);
 
         file_put_contents($this->getDirectory(), $this->sessions->toJson());
 
-        return $this->sessions->firstWhere('clientGalaxId', '=', $clientGalaxId)->count() == 0;
+        return $this->sessions->where('client_galax_id', '=', $clientGalaxId)->count() == 0;
     }
 
     private function getDirectory(): string
@@ -73,16 +84,20 @@ class File extends Session implements ContractsSession
         return sprintf('%s/%s', sys_get_temp_dir(), static::GALAX_PAY_SESSIONS);
     }
 
-    private function setSessions()
+    private function loadSessions()
     {
-        $this->sessions = collect([]);
+        $dir = $this->getDirectory();
 
-        if (!file_exists($this->getDirectory())) return;
+        if (!file_exists($dir)) touch($dir);
 
-        if (!empty(file_get_contents($this->getDirectory()))) return;
+        if (empty(file_get_contents($dir))) {
+            $this->sessions = collect([]);
+        } else {
+            $content = json_decode(file_get_contents($this->getDirectory()), true);
 
-        $content = json_decode(file_get_contents($this->getDirectory()), true);
-
-        $this->sessions = $this->sessions->merge($content)->sortBy('clientGalaxId');
+            $this->sessions = collect($content)->sortBy('client_galax_id')->reject(function ($session) {
+                return empty($session['access_token']);
+            });
+        }
     }
 }

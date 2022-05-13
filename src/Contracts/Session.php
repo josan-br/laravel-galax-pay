@@ -8,13 +8,9 @@ interface Session
 {
     public function __construct(Config $config);
 
-    public function __get($key);
+    public function getSession($clientGalaxId);
 
-    public function __set($key, $value);
-
-    public function expired(): bool;
-
-    public function checkSession($clientGalaxId): bool;
+    public function expired($clientGalaxId): bool;
 
     public function getClientCredentials($clientGalaxId = null): array;
 
