@@ -3,8 +3,11 @@
 namespace JosanBr\GalaxPay\Tests\DatabaseSession;
 
 use JosanBr\GalaxPay\Facades\GalaxPay;
+
 use JosanBr\GalaxPay\Http\Auth;
 use JosanBr\GalaxPay\Http\Config;
+use JosanBr\GalaxPay\Http\Request;
+
 use JosanBr\GalaxPay\Models\GalaxPayClient;
 use JosanBr\GalaxPay\Models\GalaxPaySession;
 
@@ -60,8 +63,9 @@ class GalaxPayTest extends TestCase
     public function it_can_authenticate()
     {
         $config = new Config(config('galax_pay'));
+        $request = new Request($config->options());
 
-        $auth = new Auth($config);
+        $auth = new Auth($config, $request);
 
         $client = $this->createGalaxPayClient();
 
