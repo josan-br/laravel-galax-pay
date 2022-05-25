@@ -3,8 +3,15 @@
 namespace JosanBr\GalaxPay\Http;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\MessageFormatter;
+use GuzzleHttp\Middleware;
+
 use JosanBr\GalaxPay\Exceptions\AuthorizationException;
 use JosanBr\GalaxPay\Exceptions\GalaxPayRequestException;
+
+use Monolog\Handler\RotatingFileHandler;
+use Monolog\Logger;
 
 final class Request
 {
@@ -12,6 +19,11 @@ final class Request
      * @var \GuzzleHttp\Client
      */
     private $client;
+
+    /**
+     * @var \Monolog\Logger
+     */
+    private $logger;
 
     /**
      * @var array
@@ -28,7 +40,8 @@ final class Request
         $clientOptions = [
             'debug' => $this->options['debug'],
             'base_uri' => $this->options['baseUri'],
-            'headers' => ['Content-Type' => 'application/json']
+            'headers' => ['Content-Type' => 'application/json'],
+            'handler' => $this->setLoggingHandler(),
         ];
 
         $this->client = new Client($clientOptions);
@@ -52,9 +65,9 @@ final class Request
                 }
             }
 
-            $response = $this->client->request($method, $route, $options);
+            $res = $this->client->request($method, $route, $options);
 
-            return json_decode($response->getBody()->getContents(), true);
+            return json_decode($res->getBody()->getContents() ?: (string) $res->getBody(), true);
         } catch (\GuzzleHttp\Exception\RequestException $e) {
             $status = $e->getResponse()->getStatusCode();
             $data = json_decode($e->getResponse()->getBody()->getContents(), true);
@@ -71,5 +84,40 @@ final class Request
         } catch (\GuzzleHttp\Exception\ServerException $e) {
             throw $e;
         }
+    }
+
+    /**
+     * Setup Logger
+     */
+    private function getLogger()
+    {
+        if (!$this->logger) {
+            $this->logger = with(new Logger('galax-pay'))
+                ->pushHandler(new RotatingFileHandler(storage_path('logs/galax-pay/pay.log')));
+        }
+
+        return $this->logger;
+    }
+
+    /**
+     * Setup Middleware
+     */
+    private function setGuzzleMiddleware(string $messageFormat)
+    {
+        return Middleware::log($this->getLogger(), new MessageFormatter($messageFormat));
+    }
+
+    /**
+     * Set Logging Handler Stack
+     */
+    private function setLoggingHandler()
+    {
+        $stack = HandlerStack::create();
+
+        $messageFormat = '{ "request": { "method": "{method}", "url": "{uri}", "headers": "{req_headers}", "payload": {req_body} }, "response": { "status": {code}, "data": {res_body} } }';
+
+        $stack->unshift($this->setGuzzleMiddleware($messageFormat));
+
+        return $stack;
     }
 }

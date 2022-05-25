@@ -2,6 +2,9 @@
 
 namespace JosanBr\GalaxPay;
 
+use JosanBr\GalaxPay\Http\Config;
+use JosanBr\GalaxPay\Http\Request;
+
 /**
  * Galax Pay Service
  */
@@ -22,15 +25,22 @@ class GalaxPay
     private $config;
 
     /**
+     * @var \JosanBr\GalaxPay\Http\Request
+     */
+    private $request;
+
+    /**
      * Initialize Galax Pay Service
      * 
      * @return void
      */
     public function __construct()
     {
-        $this->config = new \JosanBr\GalaxPay\Http\Config(config('galax_pay'));
+        $this->config = new Config(config('galax_pay'));
 
-        $this->api = new \JosanBr\GalaxPay\Http\Api($this->config);
+        $this->request = new Request($this->config->options());
+
+        $this->api = new \JosanBr\GalaxPay\Http\Api($this->config, $this->request);
     }
 
     /**
@@ -46,27 +56,13 @@ class GalaxPay
     }
 
     /**
-     * Get config
+     * Generate Id
      * 
-     * @param string $key
-     * @param string $default
-     * @return mixed
+     * @return string
      */
-    public function getConfig(string $key, $default = null)
+    public function generateId()
     {
-        return $this->config->get($key, $default);
-    }
-
-    /**
-     * Add more information to the request
-     * 
-     * @param array $options
-     * @return void
-     * @link https://docs.guzzlephp.org/en/stable/request-options.html
-     */
-    public function setApiOptions(array $options)
-    {
-        $this->api->setOptions($options);
+        return uniqid('pay-') . '.' . time();
     }
 
     /**
@@ -89,15 +85,5 @@ class GalaxPay
     public function register($data)
     {
         return \JosanBr\GalaxPay\Models\GalaxPayRegistration::create($data);
-    }
-
-    /**
-     * Generate Id
-     * 
-     * @return string
-     */
-    public function generateId()
-    {
-        return uniqid('pay-') . '.' . time();
     }
 }

@@ -3,8 +3,11 @@
 namespace JosanBr\GalaxPay\Tests\AsPartner;
 
 use JosanBr\GalaxPay\Facades\GalaxPay;
+
 use JosanBr\GalaxPay\Http\Auth;
 use JosanBr\GalaxPay\Http\Config;
+use JosanBr\GalaxPay\Http\Request;
+
 use JosanBr\GalaxPay\Sessions\File;
 
 class GalaxPayTest extends TestCase
@@ -15,8 +18,9 @@ class GalaxPayTest extends TestCase
     public function it_can_authenticate_as_a_partner()
     {
         $config = new Config(config('galax_pay'));
+        $request = new Request($config->options());
 
-        $auth = new Auth($config);
+        $auth = new Auth($config, $request);
 
         if ($auth->sessionExpired($config->get('credentials.client.id')))
             $auth->authenticate($config->get('credentials.client.id'));

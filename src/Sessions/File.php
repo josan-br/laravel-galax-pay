@@ -96,8 +96,10 @@ class File extends Session implements ContractsSession
             $content = json_decode(file_get_contents($this->getDirectory()), true);
 
             $this->sessions = collect($content)->sortBy('client_galax_id')->reject(function ($session) {
-                return empty($session['access_token']);
+                return empty($session['access_token']) || (isset($session['expires_in']) && $session['expires_in'] <= time());
             });
+
+            file_put_contents($dir, $this->sessions->toJson());
         }
     }
 }

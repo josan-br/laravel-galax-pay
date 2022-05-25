@@ -37,11 +37,11 @@ final class Auth
     /**
      * @param \JosanBr\GalaxPay\Http\Config $config
      */
-    public function __construct(Config $config)
+    public function __construct(Config $config, Request $request)
     {
         $this->config = $config;
 
-        $this->request = new Request($this->config->options());
+        $this->request = $request;
 
         $this->authAsPartner = $this->config->get('auth_as_partner', false);
 

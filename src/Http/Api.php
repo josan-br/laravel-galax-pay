@@ -46,13 +46,15 @@ final class Api
      * @param \JosanBr\GalaxPay\Http\Config|null $config
      * @return void
      */
-    public function __construct(Config $config = null)
+    public function __construct(Config $config, Request $request)
     {
         $this->config = $config;
-        $this->options = $this->config->options();
 
-        $this->auth = new Auth($this->config);
-        $this->request = new Request($this->options);
+        $this->request = $request;
+
+        $this->options = $this->config->options();
+        
+        $this->auth = new Auth($this->config, $this->request);
     }
 
     /**
