@@ -43,11 +43,9 @@ class Database extends Session implements ContractsSession
     {
         if ($this->sessions->count() == 0) return null;
 
-        if (is_null($this->session) || $this->session['galaxPayClient']['galax_id'] != $clientGalaxId) {
-            $this->session = $this->sessions->first(function ($item) use ($clientGalaxId) {
-                return $item['galaxPayClient']['galax_id'] == $clientGalaxId;
-            });
-        }
+        $this->session = $this->sessions->first(function ($item) use ($clientGalaxId) {
+            return $item['galaxPayClient']['galax_id'] == $clientGalaxId;
+        });
 
         return $this->session;
     }
@@ -115,13 +113,17 @@ class Database extends Session implements ContractsSession
      */
     private function getClient($clientGalaxId)
     {
+        /** @var \Illuminate\Database\Eloquent\Model */
         $Client = $this->clientsTable['model'];
+
         return $Client::where('galax_id', $clientGalaxId)->firstOrFail();
     }
 
     private function loadSessions()
     {
+        /** @var \Illuminate\Database\Eloquent\Model */
         $Session = $this->sessionsTable['model'];
+
         $this->sessions = $Session::with('galaxPayClient')->get();
     }
 
