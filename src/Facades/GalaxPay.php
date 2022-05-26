@@ -8,9 +8,8 @@ use Illuminate\Support\Facades\Facade;
  * Facade for the GalaxPay
  *
  * @method static string generateId()
- * @method static void setOptions(array $options)
- * @method static \JosanBr\GalaxPay\QueryParams queryParams()
- * @method static \JosanBr\GalaxPay\Models\GalaxPayRegistration register()
+ * @method static \JosanBr\GalaxPay\QueryParams queryParams(array $params = [])
+ * @method static \JosanBr\GalaxPay\Models\GalaxPayRegistration register(array $data)
  * 
  * @method static mixed authenticate()
  * @method static mixed listCustomers()
