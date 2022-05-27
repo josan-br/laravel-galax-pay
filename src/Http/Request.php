@@ -69,8 +69,9 @@ final class Request
 
             return json_decode($res->getBody()->getContents() ?: (string) $res->getBody(), true);
         } catch (\GuzzleHttp\Exception\RequestException $e) {
+            $body = $e->getResponse()->getBody();
             $status = $e->getResponse()->getStatusCode();
-            $data = json_decode($e->getResponse()->getBody()->getContents(), true);
+            $data = json_decode($body->getContents() ?: (string) $body, true);
 
             $details = data_get($data, 'error.details', []);
             $message = data_get($data, 'error.message', $e->getMessage());
