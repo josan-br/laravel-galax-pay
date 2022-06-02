@@ -19,10 +19,10 @@ class GalaxPayTest extends TestCase
     private function createGalaxPayClient()
     {
         return \JosanBr\GalaxPay\Models\GalaxPayClient::create([
-            'entity_id' => 1,
+            'model_id' => 1,
+            'model' => \JosanBr\GalaxPay\Models\GalaxPayClient::class,
             'galax_id' => 5473,
             'galax_hash' => '83Mw5u8988Qj6fZqS4Z8K7LzOo1j28S706R0BeFe',
-            'entity' => \JosanBr\GalaxPay\Models\GalaxPayClient::class
         ]);
     }
 

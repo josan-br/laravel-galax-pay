@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * @property int $id
+ * @property string $galax_id
  * @property string $model
  * @property string $model_id
  * @property string $my_id
@@ -18,7 +19,30 @@ class GalaxPayRegistration extends Model
     /**
      * @var array
      */
-    protected $fillable = ['model', 'model_id', 'my_id', 'galax_pay_id', 'created_at', 'updated_at'];
+    protected $fillable = ['galax_id', 'model', 'model_id', 'my_id', 'galax_pay_id', 'created_at', 'updated_at'];
+
+    /**
+     * The "booting" method of the model.
+     *
+     * @return void
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function (GalaxPayRegistration $galaxPay) {
+            if (empty($galaxPay->galax_id))
+                $galaxPay->galax_id = config('galax_pay.credentials.client.id');
+        });
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function galaxPayClient()
+    {
+        return $this->belongsTo(GalaxPayClient::class, 'galax_id');
+    }
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\MorphTo
