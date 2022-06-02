@@ -15,6 +15,7 @@ class CreateGalaxPayRegistrationsTable extends Migration
     {
         Schema::create('galax_pay_registrations', function (Blueprint $table) {
             $table->integer('id', true, true);
+            $table->string('galax_id', 15);
             $table->string('model');
             $table->string('model_id');
             $table->string('my_id')->comment('Your id on galax pay');
