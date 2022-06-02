@@ -113,10 +113,10 @@ return [
      */
 
     'galax_pay_clients' => [
-        'model'      => \JosanBr\GalaxPay\Models\GalaxPayClient::class,
+        'ref'        => \JosanBr\GalaxPay\Models\GalaxPayClient::class,
         // Columns
-        'entity'     => 'entity',
-        'entity_id'  => 'entity_id',
+        'model'      => 'model',
+        'model_id'   => 'model_id',
         'galax_id'   => 'galax_id',
         'galax_hash' => 'galax_hash',
     ],
@@ -131,7 +131,7 @@ return [
     */
 
     'galax_pay_sessions' => [
-        'model'        => \JosanBr\GalaxPay\Models\GalaxPaySession::class,
+        'ref'          => \JosanBr\GalaxPay\Models\GalaxPaySession::class,
         // Columns
         'scope'        => 'scope',
         'expires_in'   => 'expires_in',

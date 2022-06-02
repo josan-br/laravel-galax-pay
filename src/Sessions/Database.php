@@ -26,8 +26,6 @@ class Database extends Session implements ContractsSession
         parent::__construct($config);
 
         $this->loadTables();
-
-        $this->loadSessions();
     }
 
     public function getClientCredentials($clientGalaxId = null): array
@@ -41,13 +39,12 @@ class Database extends Session implements ContractsSession
 
     public function getSession($clientGalaxId)
     {
-        if ($this->sessions->count() == 0) return null;
+        /** @var \Illuminate\Database\Eloquent\Model */
+        $Session = $this->sessionsTable['ref'];
 
-        $this->session = $this->sessions->first(function ($item) use ($clientGalaxId) {
-            return $item['galaxPayClient']['galax_id'] == $clientGalaxId;
-        });
-
-        return $this->session;
+        return $Session::whereHas('galaxPayClient', function ($query) use ($clientGalaxId) {
+            return $query->where('galax_id', $clientGalaxId);
+        })->first();
     }
 
     public function expired($clientGalaxId): bool
@@ -61,12 +58,12 @@ class Database extends Session implements ContractsSession
 
     public function updateOrCreate($clientGalaxId, $values = []): void
     {
-        $Session = $this->sessionsTable['model'];
+        $Session = $this->sessionsTable['ref'];
 
         $client = $this->getClient($clientGalaxId);
 
         /** @var \JosanBr\GalaxPay\Models\GalaxPaySession */
-        $session = $Session::updateOrCreate([
+        $Session::updateOrCreate([
             $this->sessionsTable['client_id'] => $client->id
         ], [
             $this->sessionsTable['client_id'] => $client->id,
@@ -75,37 +72,17 @@ class Database extends Session implements ContractsSession
             $this->sessionsTable['token_type'] => $values['token_type'],
             $this->sessionsTable['access_token'] => $values['access_token']
         ]);
-
-        $session->load('galaxPayClient');
-
-        if ($session->wasRecentlyCreated) {
-            $this->sessions->push($session);
-        } else {
-            $this->sessions = $this->sessions->map(function ($item) use ($session) {
-                $itemGalaxId = $item['galaxPayClient']['galaxId'];
-                $sessionGalaxId = $session['galaxPayClient']['galaxId'];
-                return $itemGalaxId == $sessionGalaxId ? $session : $item;
-            });
-        }
     }
 
     public function remove($clientGalaxId): bool
     {
-        $Session = $this->sessionsTable['model'];
+        $Session = $this->sessionsTable['ref'];
 
         $session = $Session::whereHas('galaxPayClient', function ($query) use ($clientGalaxId) {
             return $query->where('galax_id', $clientGalaxId);
-        })->firstOrFail();
+        })->first();
 
-        if ($session->delete()) {
-            $sessionKey = $this->sessions->search(function ($session) use ($clientGalaxId) {
-                return $session['galaxPayClient']['galax_id'] ==  $clientGalaxId;
-            });
-
-            $this->sessions->pull($sessionKey);
-        }
-
-        return $this->sessions->where('galaxPayClient.galax_id', '=', $clientGalaxId)->count() == 0;
+        return $session && $session->delete();
     }
 
     /** 
@@ -114,17 +91,9 @@ class Database extends Session implements ContractsSession
     private function getClient($clientGalaxId)
     {
         /** @var \Illuminate\Database\Eloquent\Model */
-        $Client = $this->clientsTable['model'];
+        $Client = $this->clientsTable['ref'];
 
         return $Client::where('galax_id', $clientGalaxId)->firstOrFail();
-    }
-
-    private function loadSessions()
-    {
-        /** @var \Illuminate\Database\Eloquent\Model */
-        $Session = $this->sessionsTable['model'];
-
-        $this->sessions = $Session::with('galaxPayClient')->get();
     }
 
     private function loadTables()
@@ -132,11 +101,11 @@ class Database extends Session implements ContractsSession
         $clientsTable = $this->config->get('galax_pay_clients');
         $sessionsTable = $this->config->get('galax_pay_sessions');
 
-        if (!class_exists($clientsTable['model']))
-            throw new \Exception("Galax pay client model not found", 1);
+        if (!class_exists($clientsTable['ref']))
+            throw new \Exception("Galax pay client model reference not found", 1);
 
-        if (!class_exists($sessionsTable['model']))
-            throw new \Exception("Galax pay session model not found", 1);
+        if (!class_exists($sessionsTable['ref']))
+            throw new \Exception("Galax pay session model reference not found", 1);
 
         $this->clientsTable = $clientsTable;
         $this->sessionsTable = $sessionsTable;
