@@ -42,16 +42,17 @@ In this case, just go to `config/galax_pay.php` and define the models you want t
 ```php
 // ...
 'galax_pay_clients' => [
-    'model'      => \JosanBr\GalaxPay\Models\GalaxPayClient::class,
+    'ref'          => \JosanBr\GalaxPay\Models\GalaxPayClient::class,
     // Columns
-    'entity'     => 'entity',
-    'entity_id'  => 'entity_id',
-    'galax_id'   => 'galax_id',
-    'galax_hash' => 'galax_hash',
+    'model_type'   => 'model_type',
+    'model_id'     => 'model_id',
+    'galax_id'     => 'galax_id',
+    'galax_hash'   => 'galax_hash',
+    'webhook_hash' => 'webhook_hash',
 ],
 
 'galax_pay_sessions' => [
-    'model'        => \JosanBr\GalaxPay\Models\GalaxPaySession::class,
+    'ref'          => \JosanBr\GalaxPay\Models\GalaxPaySession::class,
     // Columns
     'scope'        => 'scope',
     'expires_in'   => 'expires_in',
@@ -66,6 +67,7 @@ Step 4. add environment variables:
 ```
 php artisan galax-pay:publish
 ```
+
 and choose: **environment variables**
 
 ```
@@ -90,10 +92,10 @@ If using standard authentication, `auth_as_partner = false`, just call an endpoi
 $data = GalaxPay::listCustomers();
 ```
 
-If you use auth_as_partner=true partner authentication, you must pass the client's galax_id as an argument:
+If you use `auth_as_partner = true` partner authentication, you must pass the client's galax_id as an argument:
 
 ```php
-$data = GalaxPay::listCustomers(['clientGalaxId' => $clientGalaxId]);
+$data = GalaxPay::listCustomers([], ['client_galax_id' => $clientGalaxId]);
 ```
 
 You can see the available endpoints [here](https://github.com/josan-br/laravel-galax-pay/blob/master/config/endpoints.php).
@@ -101,29 +103,42 @@ You can see the available endpoints [here](https://github.com/josan-br/laravel-g
 All endpoints receive a single array type function parameter, in the following format:
 
 ```php
-$data = GalaxPay::endpointName([
-    /**
-     * Parameters in the uri path
-     */
-    'params' => ['customerId' => '', 'typeId' => ''],
+/**
+ * GET example
+ * 
+ * @var array|\JosanBr\GalaxPay\QueryParams $queryParams
+ * @var array|\JosanBr\GalaxPay\Http\Options $options
+ */
 
-    /**
-     * To pass parameters in the URL use the QueryParams class,
-     * which takes an array of parameters.
-     *
-     * NOTE: Use only on data fetch endpoints
-     */
-    'query' => new \JosanBr\GalaxPay\QueryParams($params),
-    // or use the GalaxPay Facade
-    'query' => GalaxPay::queryParams($params),
+$res = GalaxPay::listCustomers($queryParams, $options);
 
-    /**
-     * Data to send to galax pay, can be an array or one of
-     * the models available in \JosanBr\GalaxPay\Models,
-     * with the exception of GalaxPayClient and GalaxPaySession
-     */
-    'data' => [],
-]);
+/**
+ * POST example
+ * 
+ * @var array|\JosanBr\GalaxPay\Abstracts\Model $data
+ * @var array|\JosanBr\GalaxPay\Http\Options $options
+ */
+
+$res = GalaxPay::createCustomer($data, $options);
+
+/**
+ * PUT example
+ * 
+ * @var int|string $id
+ * @var array|\JosanBr\GalaxPay\Abstracts\Model $data
+ * @var array|\JosanBr\GalaxPay\Http\Options $options
+ */
+
+$res = GalaxPay::editCustomer($id, $data, $options);
+
+/**
+ * DELETE example
+ * 
+ * @var int|string $id
+ * @var array|\JosanBr\GalaxPay\Http\Options $options
+ */
+
+$res = GalaxPay::deleteCustomer($id, $options);
 ```
 
 The QueryParams class has only the common parameters between the data fetching endpoints, to see all the parameters that each endpoint accepts, consult the [Galax Pay documentation.](https://docs.galaxpay.com.br)
