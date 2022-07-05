@@ -2,6 +2,8 @@
 
 namespace JosanBr\GalaxPay\Tests\DatabaseSession;
 
+use JosanBr\GalaxPay\Constants\PaymentMethod;
+use JosanBr\GalaxPay\Constants\Periodicity;
 use JosanBr\GalaxPay\Facades\GalaxPay;
 
 use JosanBr\GalaxPay\Http\Auth;
@@ -20,7 +22,7 @@ class GalaxPayTest extends TestCase
     {
         return \JosanBr\GalaxPay\Models\GalaxPayClient::create([
             'model_id' => 1,
-            'model' => \JosanBr\GalaxPay\Models\GalaxPayClient::class,
+            'model_type' => \JosanBr\GalaxPay\Models\GalaxPayClient::class,
             'galax_id' => 5473,
             'galax_hash' => '83Mw5u8988Qj6fZqS4Z8K7LzOo1j28S706R0BeFe',
         ]);
@@ -88,8 +90,9 @@ class GalaxPayTest extends TestCase
         $client = $this->createGalaxPayClient();
 
         $response = GalaxPay::listCustomers([
-            'clientGalaxId' => $client->galax_id,
-            'query' => GalaxPay::queryParams(['limit' => 10])
+            'limit' => 10
+        ], [
+            'client_galax_id' => $client->galax_id
         ]);
 
         $this->assertCount(10, $response['Customers']);
@@ -101,58 +104,49 @@ class GalaxPayTest extends TestCase
     public function it_can_create_subscription_with_credit_card()
     {
         $myId = GalaxPay::generateId();
+        $customerId = GalaxPay::generateId();
 
         $client = $this->createGalaxPayClient();
 
+        $options = GalaxPay::httpOptions(['client_galax_id' => $client->galax_id]);
+
         $response = GalaxPay::createSubscription([
-            'clientGalaxId' => $client->galax_id,
-            'data' => [
-                "myId" => $myId,
-                "value" => 12999,
-                "quantity" => 12,
-                "periodicity" => "monthly",
-                "firstPayDayDate" => date('Y-m-d'),
-                "additionalInfo" => "Lorem ipsum dolor sit amet.",
-                "mainPaymentMethodId" => "creditcard",
-                "Customer" => [
-                    "myId" => "pay-626c69563f21f9.07415510",
-                    "name" => "Lorem ipsum dolor sit amet.",
-                    "document" => "92111146919",
-                    "emails" => [
-                        "teste8858email810@galaxpay.com.br",
-                        "teste5789email4547@galaxpay.com.br"
-                    ],
-                    "phones" => [
-                        3140201512,
-                        31983890110
-                    ],
-                    "Address" => [
-                        "zipCode" => "30411330",
-                        "street" => "Rua platina",
-                        "number" => "1330",
-                        "complement" => "2º andar",
-                        "neighborhood" => "Prado",
-                        "city" => "Belo Horizonte",
-                        "state" => "MG"
-                    ]
-                ],
-                "PaymentMethodCreditCard" => [
-                    "Card" => [
-                        "myId" => "pay-626c6957562285.80824392",
-                        "number" => "4111 1111 1111 1111",
-                        "holder" => "JOAO J J DA SILVA",
-                        "expiresAt" => "2022-04",
-                        "cvv" => "363"
-                    ]
-                ],
-                "PaymentMethodBoleto" => [
-                    "fine" => 100,
-                    "interest" => 200,
-                    "instructions" => "Lorem ipsum dolor sit amet.",
-                    "deadlineDays" => 1
+            "myId" => $myId,
+            "value" => 12999,
+            "quantity" => 12,
+            "firstPayDayDate" => date('Y-m-d'),
+            "periodicity" => Periodicity::MONTHLY,
+            "additionalInfo" => "Lorem ipsum dolor sit amet.",
+            "mainPaymentMethodId" => PaymentMethod::CREDIT_CARD,
+            "Customer" => [
+                "myId" => $customerId,
+                "name" => "Thiago Enrico Marcos Lopes",
+                "document" => "22820654339",
+                "emails" => ["thiagoenricolopes@gsw.com.br"],
+                "phones" => [2738359874, 27991065923],
+                "Address" => [
+                    "zipCode" => "30411330",
+                    "street" => "Rua platina",
+                    "number" => "1330",
+                    "complement" => "2º andar",
+                    "neighborhood" => "Prado",
+                    "city" => "Belo Horizonte",
+                    "state" => "MG"
                 ]
-            ]
-        ]);
+            ],
+            "PaymentMethodCreditCard" => [
+                "Card" => [
+                    "cvv" => "363",
+                    "myId" => GalaxPay::generateId(),
+                    "number" => "4111 1111 1111 1111",
+                    "expiresAt" => date('Y') . '-' . intval(date('m')) + 5,
+                    "holder" => "JOAO J J DA SILVA",
+                ]
+            ],
+        ], $options);
+
+        GalaxPay::cancelSubscription($myId, $options);
+        GalaxPay::deleteCustomer($customerId, $options);
 
         $this->assertEquals($myId, $response['Subscription']['myId']);
     }
