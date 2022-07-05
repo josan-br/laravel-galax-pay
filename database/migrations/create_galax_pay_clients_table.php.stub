@@ -16,11 +16,11 @@ class CreateGalaxPayClientsTable extends Migration
         Schema::create('galax_pay_clients', function (Blueprint $table) {
             $table->integer('id', true, true);
 
-            $table->string('model');
-            $table->string('model_id');
+            $table->morphs('model');
 
             $table->string('galax_id')->unique();
             $table->string('galax_hash')->unique();
+            $table->string('webhook_hash')->nullable();
             $table->timestamps();
         });
     }

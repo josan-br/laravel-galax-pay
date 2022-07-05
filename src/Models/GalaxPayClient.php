@@ -6,10 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * @property int $id
- * @property string $model
+ * @property string $model_type
  * @property string $model_id
  * @property string $galax_id
  * @property string $galax_hash
+ * @property string $webhook_hash
  * @property string $created_at
  * @property string $updated_at
  * @property GalaxPayRegistration[] $galaxPayRegistrations
@@ -20,22 +21,7 @@ class GalaxPayClient extends Model
     /**
      * @var array
      */
-    protected $fillable = ['model', 'model_id', 'galax_id', 'galax_hash', 'created_at', 'updated_at'];
-
-    /**
-     * The "booting" method of the model.
-     *
-     * @return void
-     */
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::creating(function (GalaxPayClient $galaxPayClient) {
-            if (empty($galaxPayClient->model))
-                $galaxPayClient->model = config('galax_pay.galax_pay_clients.ref');
-        });
-    }
+    protected $fillable = ['model_type', 'model_id', 'galax_id', 'galax_hash', 'webhook_hash', 'created_at', 'updated_at'];
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
@@ -51,5 +37,13 @@ class GalaxPayClient extends Model
     public function galaxPaySession()
     {
         return $this->hasOne(GalaxPaySession::class);
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\MorphTo
+     */
+    public function model()
+    {
+        return $this->morphTo();
     }
 }
