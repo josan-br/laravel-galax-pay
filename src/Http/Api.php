@@ -5,13 +5,17 @@ namespace JosanBr\GalaxPay\Http;
 use JosanBr\GalaxPay\Http\Auth;
 use JosanBr\GalaxPay\Http\Config;
 use JosanBr\GalaxPay\Exceptions\AuthorizationException;
-use JosanBr\GalaxPay\QueryParams;
+
+use JosanBr\GalaxPay\Traits\Api\ResolveArguments;
+use JosanBr\GalaxPay\Traits\Api\ValidateArguments;
 
 /**
  * Galax Pay API client
  */
 final class Api
 {
+    use ResolveArguments, ValidateArguments;
+
     /**
      * Auth current instance
      * 
@@ -53,7 +57,7 @@ final class Api
         $this->request = $request;
 
         $this->options = $this->config->options();
-        
+
         $this->auth = new Auth($this->config, $this->request);
     }
 
@@ -80,8 +84,6 @@ final class Api
     {
         $this->options = $this->config->options(array_merge($this->options, $options));
 
-        $this->request = new Request($this->options);
-
         return $this;
     }
 
@@ -97,11 +99,11 @@ final class Api
     {
         $endpoint = $this->config->endpoint($name);
 
-        $this->validateArguments($name, $endpoint['route'], $arguments);
+        $this->validateArguments($name, $endpoint, $arguments);
 
-        $route = $this->resolve($endpoint, $arguments);
+        $route = $this->resolve($endpoint, $arguments, $clientGalaxId);
 
-        $clientGalaxId = data_get($arguments, '0.clientGalaxId', $this->config->get('credentials.client.id'));
+        if (empty($clientGalaxId)) $clientGalaxId = $this->config->get('credentials.client.id');
 
         try {
             if ($this->auth->sessionExpired($clientGalaxId))
@@ -122,48 +124,6 @@ final class Api
     }
 
     /**
-     * Extract route parameters
-     * 
-     * @param string $route
-     * @return string[]
-     */
-    private function extractParameters(string $route): array
-    {
-        preg_match_all('/\:(\w+)/im', $route, $parameters);
-        return $parameters[1];
-    }
-
-    /**
-     * Resolve the endpoint and arguments for the request
-     * 
-     * @param string[] $endpoint
-     * @param array $arguments
-     * @return string
-     */
-    private function resolve(array $endpoint, array $arguments): string
-    {
-        $route = $endpoint['route'];
-        $query = data_get($arguments, '0.query');
-        $params = data_get($arguments, '0.params', []);
-
-        if ($endpoint['method'] == 'GET') {
-            $query = is_null($query) ? QueryParams::build() : $query->build();
-        } else $query = null;
-
-        if ($endpoint['method'] != 'GET' && isset($arguments[0]['data']))
-            $this->options['json'] = $arguments[0]['data'];
-
-        foreach ($this->extractParameters($route) as $param) {
-            if (isset($params[$param]))
-                $route = str_replace(":$param", $params[$param], $route);
-        }
-
-        if (is_string($query) && strlen($query)) $route .= $query;
-
-        return $route;
-    }
-
-    /**
      * Set authorization token in request header
      * 
      * @return void
@@ -174,55 +134,5 @@ final class Api
             'Accept'        => 'application/json',
             'Authorization' => $this->auth->getAuthorizationToken($clientGalaxId)
         ]);
-    }
-
-    /**
-     * Validate arguments
-     * 
-     * @param string $name
-     * @param string $route
-     * @param array|null $args
-     * 
-     * @return void
-     * 
-     * @throws \Exception
-     * @throws \TypeError
-     * @throws \ArgumentCountError
-     * @throws \InvalidArgumentException
-     */
-    private function validateArguments(string $name, string $route, array $args = null): void
-    {
-        if (is_null($args)) return;
-
-        if (count($args) > 1)
-            throw new \ArgumentCountError(sprintf('The %s() function accepts only one array type argument', $name));
-
-        if (isset($args[0]) && !is_array($args[0])) {
-            $message = 'The argument passed to %s() must be of type array or null, %s given';
-            throw new \TypeError(sprintf($message, $name, gettype($args[0])));
-        }
-
-        if (isset($args[0]['query']) && !($args[0]['query'] instanceof QueryParams)) {
-            $message = 'The argument [query] passed to %s() must be an instance of the %s, %s given';
-            throw new \InvalidArgumentException(sprintf($message, $name, QueryParams::class, gettype($args[0]['query'])));
-        }
-
-        if (isset($args[0]['data']) && !is_array($args[0]['data']) && !is_object($args[0]['data'])) {
-            $message = 'The argument [data] passed to %s() must be of type array, %s given';
-            throw new \InvalidArgumentException(sprintf($message, $name, gettype($args[0]['data'])));
-        }
-
-        if (isset($args[0]['params'])) {
-            if (!is_array($args[0]['params'])) {
-                $message = 'The argument [params] passed to %s() must be of type array, %s given';
-                throw new \InvalidArgumentException(sprintf($message, $name, gettype($args[0]['params'])));
-            }
-
-            foreach (array_values($this->extractParameters($route)) as $param) {
-                if (!in_array($param, array_keys($args[0]['params']))) {
-                    throw new \Exception(sprintf('Parameter "%s" is required in array [params]', $param));
-                }
-            }
-        }
     }
 }

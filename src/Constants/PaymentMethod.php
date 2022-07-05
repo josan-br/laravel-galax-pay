@@ -2,11 +2,11 @@
 
 namespace JosanBr\GalaxPay\Constants;
 
-final class PaymentMethod
+enum PaymentMethod: string
 {
-    public const BILLET = 'boleto';
+    case BILLET = 'boleto';
 
-    public const CREDIT_CARD = 'creditcard';
+    case CREDIT_CARD = 'creditcard';
 
-    public const PIX = 'pix';
+    case PIX = 'pix';
 }

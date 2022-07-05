@@ -25,8 +25,10 @@ class GalaxPayServiceProvider extends ServiceProvider
     {
         $this->mergeConfigFrom(__DIR__ . '/../../config/galax_pay.php', 'galax_pay');
 
-        $this->app->bind('galaxPay', function () {
+        $this->app->singleton('galaxPay', function () {
             return new \JosanBr\GalaxPay\GalaxPay();
         });
+
+        $this->app->alias('galaxPay', \JosanBr\GalaxPay\GalaxPay::class);
     }
 }

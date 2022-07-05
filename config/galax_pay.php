@@ -20,6 +20,17 @@ return [
     ],
 
     /*
+    |--------------------------------------------------------------------------
+    | Galax Pay URL Type ID
+    |--------------------------------------------------------------------------
+    |
+    | This value determines the default id type that will be used 
+    | in the endpoints that need the typeId.
+    |
+    */
+    'default_id_type' => env('GALAX_PAY_TYPE_ID', 'myId'),
+
+    /*
      |--------------------------------------------------------------------------
      | Galax Pay Partner
      |--------------------------------------------------------------------------
@@ -113,12 +124,13 @@ return [
      */
 
     'galax_pay_clients' => [
-        'ref'        => \JosanBr\GalaxPay\Models\GalaxPayClient::class,
+        'ref'          => \JosanBr\GalaxPay\Models\GalaxPayClient::class,
         // Columns
-        'model'      => 'model',
-        'model_id'   => 'model_id',
-        'galax_id'   => 'galax_id',
-        'galax_hash' => 'galax_hash',
+        'model_type'   => 'model_type',
+        'model_id'     => 'model_id',
+        'galax_id'     => 'galax_id',
+        'galax_hash'   => 'galax_hash',
+        'webhook_hash' => 'webhook_hash',
     ],
 
     /*

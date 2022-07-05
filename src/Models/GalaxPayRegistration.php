@@ -19,7 +19,7 @@ class GalaxPayRegistration extends Model
     /**
      * @var array
      */
-    protected $fillable = ['galax_id', 'model', 'model_id', 'my_id', 'galax_pay_id', 'created_at', 'updated_at'];
+    protected $fillable = ['galax_id', 'model_type', 'model_id', 'my_id', 'galax_pay_id', 'created_at', 'updated_at'];
 
     /**
      * The "booting" method of the model.
@@ -47,9 +47,9 @@ class GalaxPayRegistration extends Model
     /**
      * @return \Illuminate\Database\Eloquent\Relations\MorphTo
      */
-    public function entity()
+    public function model()
     {
-        return $this->morphTo('entity', 'model', 'model_id', 'id');
+        return $this->morphTo();
     }
 
     /**
@@ -59,6 +59,6 @@ class GalaxPayRegistration extends Model
      */
     public function scopeWhereModelId($query, $model, $modelId)
     {
-        return $query->where([['model', $model], ['model_id', $modelId]]);
+        return $query->where([['model_type', $model], ['model_id', $modelId]]);
     }
 }

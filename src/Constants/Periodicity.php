@@ -2,40 +2,40 @@
 
 namespace JosanBr\GalaxPay\Constants;
 
-final class Periodicity
+enum Periodicity: string
 {
     /**
      * Weekly
      */
-    public const WEEKLY = 'weekly';
+    case WEEKLY = 'weekly';
 
     /**
      * Biweekly
      */
-    public const BIWEEKLY = 'biweekly';
+    case BIWEEKLY = 'biweekly';
 
     /**
      * Monthly
      */
-    public const MONTHLY = 'monthly';
+    case MONTHLY = 'monthly';
 
     /**
      * Bimonthly
      */
-    public const BIMONTHLY = 'bimonthly';
+    case BIMONTHLY = 'bimonthly';
 
     /**
      * Quarterly
      */
-    public const QUARTERLY = 'quarterly';
+    case QUARTERLY = 'quarterly';
 
     /**
      * Biannual
      */
-    public const BIANNUAL = 'biannual';
+    case BIANNUAL = 'biannual';
 
     /**
      * Yearly
      */
-    public const YEARLY = 'yearly';
+    case YEARLY = 'yearly';
 }

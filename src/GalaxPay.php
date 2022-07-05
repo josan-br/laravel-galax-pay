@@ -86,4 +86,15 @@ class GalaxPay
     {
         return \JosanBr\GalaxPay\Models\GalaxPayRegistration::create($data);
     }
+
+    /**
+     * Create an instance of the http options class
+     * 
+     * @param array $options
+     * @return \JosanBr\GalaxPay\Http\Options
+     */
+    public function httpOptions(array $options = [])
+    {
+        return new \JosanBr\GalaxPay\Http\Options($options);
+    }
 }
