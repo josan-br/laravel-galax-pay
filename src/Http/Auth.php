@@ -30,7 +30,7 @@ final class Auth
     /**
      * Session manager
      * 
-     * @var \JosanBr\GalaxPay\Contracts\Session
+     * @var \JosanBr\GalaxPay\Abstracts\Session
      */
     private $sessionManager;
 

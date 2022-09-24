@@ -3,11 +3,12 @@
 namespace JosanBr\GalaxPay\Sessions;
 
 use Illuminate\Support\Arr;
+
 use JosanBr\GalaxPay\Abstracts\Session;
-use JosanBr\GalaxPay\Contracts\Session as ContractsSession;
+
 use JosanBr\GalaxPay\Http\Config;
 
-class File extends Session implements ContractsSession
+class File extends Session
 {
     const GALAX_PAY_SESSIONS = 'galax_pay_sessions.json';
 
