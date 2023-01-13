@@ -1,6 +1,6 @@
 <?php
 
-namespace JosanBr\GalaxPay\Tests\AsPartner;
+namespace JosanBr\GalaxPay\Tests\Feature\Sessions;
 
 use JosanBr\GalaxPay\Constants\PaymentMethod;
 use JosanBr\GalaxPay\Constants\Periodicity;
@@ -12,12 +12,15 @@ use JosanBr\GalaxPay\Http\Request;
 
 use JosanBr\GalaxPay\Sessions\File;
 
-class GalaxPayTest extends TestCase
+use JosanBr\GalaxPay\Tests\TestCase;
+
+class FileSessionAsClientTest extends TestCase
 {
     /**
      * @test
+     * @define-env usesFileSessionAsClient
      */
-    public function it_can_authenticate_as_a_partner()
+    public function it_can_authenticate()
     {
         $config = new Config(config('galax_pay'));
         $request = new Request($config->options());
@@ -36,11 +39,12 @@ class GalaxPayTest extends TestCase
 
     /**
      * @test
+     * @define-env usesFileSessionAsClient
      */
-    public function it_can_get_ten_customers()
+    public function it_can_get_ten_customers_using_array()
     {
         $response = GalaxPay::listCustomers([
-            'query' => GalaxPay::queryParams(['limit' => 10])
+            'limit' => 10
         ]);
 
         $this->assertCount(10, $response['Customers']);
@@ -48,10 +52,25 @@ class GalaxPayTest extends TestCase
 
     /**
      * @test
+     * @define-env usesFileSessionAsClient
+     */
+    public function it_can_get_ten_customers_using_query_params()
+    {
+        $params = GalaxPay::queryParams(['limit' => 10]);
+
+        $response = GalaxPay::listCustomers($params);
+
+        $this->assertCount(10, $response['Customers']);
+    }
+
+    /**
+     * @test
+     * @define-env usesFileSessionAsClient
      */
     public function it_can_create_subscription_with_credit_card()
     {
         $myId = GalaxPay::generateId();
+
         $customerId = GalaxPay::generateId();
 
         $response = GalaxPay::createSubscription([
@@ -59,9 +78,9 @@ class GalaxPayTest extends TestCase
             "value" => 12999,
             "quantity" => 12,
             "firstPayDayDate" => date('Y-m-d'),
-            "periodicity" => Periodicity::MONTHLY,
+            "periodicity" => Periodicity::MONTHLY->value,
             "additionalInfo" => "Lorem ipsum dolor sit amet.",
-            "mainPaymentMethodId" => PaymentMethod::CREDIT_CARD,
+            "mainPaymentMethodId" => PaymentMethod::CREDIT_CARD->value,
             "Customer" => [
                 "myId" => $customerId,
                 "name" => "Lorem ipsum dolor sit amet.",

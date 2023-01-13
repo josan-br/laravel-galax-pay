@@ -1,38 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" bootstrap="vendor/autoload.php" backupGlobals="false" backupStaticAttributes="false" colors="true" verbose="true" convertErrorsToExceptions="true" convertNoticesToExceptions="true" convertWarningsToExceptions="true" processIsolation="false" stopOnFailure="false" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd">
-    <coverage>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="./vendor/phpunit/phpunit/phpunit.xsd" bootstrap="vendor/autoload.php" colors="true">
+    <testsuites>
+        <testsuite name="Unit">
+            <directory suffix="Test.php">./tests/Unit</directory>
+        </testsuite>
+
+        <!-- <testsuite name="Feature">
+            <directory suffix="Test.php">./tests/Feature</directory>
+        </testsuite> -->
+    </testsuites>
+
+    <coverage processUncoveredFiles="true">
         <include>
-            <directory suffix=".php">src/</directory>
+            <directory suffix=".php">./src</directory>
         </include>
     </coverage>
 
-    <testsuites>
-        <testsuite name="Galax Pay Suite Test">
-            <file>tests/CommandPublishTest.php</file>
-        </testsuite>
-
-        <testsuite name="Galax Pay As Client">
-            <directory>tests/AsClient</directory>
-        </testsuite>
-
-        <testsuite name="Galax Pay As Partner">
-            <directory>tests/AsPartner</directory>
-        </testsuite>
-
-        <testsuite name="Galax Pay Database Session">
-            <directory>tests/DatabaseSession</directory>
-        </testsuite>
-    </testsuites>
-
     <php>
+        <env name="APP_ENV" value="testing"/>
         <env name="APP_KEY" value="base64:RZzyjK/jSV33DDipm8tscveMwbFEaVqdrXRXub7u8NA="/>
 
-        <env name="CACHE_DRIVER" value="array"/>
-
-        <env name="DB_CONNECTION" value="testing"/>
-
+        <env name="GALAX_PAY_ENV" value="sandbox"/>
+        <env name="GALAX_PAY_TYPE_ID" value="myId"/>
+        <env name="GALAX_PAY_SESSION_DRIVER" value="file"/>
+        <env name="GALAX_PAY_AUTH_AS_PARTNER" value="false"/>
         <env name="GALAX_PAY_CLIENT_ID" value="5473"/>
         <env name="GALAX_PAY_CLIENT_HASH" value="83Mw5u8988Qj6fZqS4Z8K7LzOo1j28S706R0BeFe"/>
+        <env name="GALAX_PAY_PARTNER_ID" value="5473"/>
+        <env name="GALAX_PAY_PARTNER_HASH" value="83Mw5u8988Qj6fZqS4Z8K7LzOo1j28S706R0BeFe"/>
+        <env name="GALAX_PAY_WEBHOOK_HASH" value=""/>
     </php>
 </phpunit>

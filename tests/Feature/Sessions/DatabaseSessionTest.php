@@ -1,6 +1,8 @@
 <?php
 
-namespace JosanBr\GalaxPay\Tests\DatabaseSession;
+namespace JosanBr\GalaxPay\Tests\Feature\Sessions;
+
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
 use JosanBr\GalaxPay\Constants\PaymentMethod;
 use JosanBr\GalaxPay\Constants\Periodicity;
@@ -13,16 +15,20 @@ use JosanBr\GalaxPay\Http\Request;
 use JosanBr\GalaxPay\Models\GalaxPayClient;
 use JosanBr\GalaxPay\Models\GalaxPaySession;
 
-class GalaxPayTest extends TestCase
+use JosanBr\GalaxPay\Tests\TestCase;
+
+class DatabaseSessionTest extends TestCase
 {
+    use RefreshDatabase;
+
     /**
      * @return \JosanBr\GalaxPay\Models\GalaxPayClient
      */
     private function createGalaxPayClient()
     {
-        return \JosanBr\GalaxPay\Models\GalaxPayClient::create([
+        return GalaxPayClient::create([
             'model_id' => 1,
-            'model_type' => \JosanBr\GalaxPay\Models\GalaxPayClient::class,
+            'model_type' => GalaxPayClient::class,
             'galax_id' => 5473,
             'galax_hash' => '83Mw5u8988Qj6fZqS4Z8K7LzOo1j28S706R0BeFe',
         ]);
@@ -30,6 +36,7 @@ class GalaxPayTest extends TestCase
 
     /**
      * @test
+     * @define-env usesDatabaseSession
      */
     public function it_can_create_galax_pay_client()
     {
@@ -43,12 +50,13 @@ class GalaxPayTest extends TestCase
 
     /**
      * @test
+     * @define-env usesDatabaseSession
      */
     public function it_can_create_galax_pay_session()
     {
         $client = $this->createGalaxPayClient();
 
-        $session = GalaxPaySession::create([
+        GalaxPaySession::create([
             'galax_pay_client_id' => $client->id,
             'token_type' => 'Bearer',
             'access_token' => '4fsd5f7sd6fs6a4fsaf7saf4sa65f4sa6f7sa98',
@@ -56,15 +64,22 @@ class GalaxPayTest extends TestCase
             'scope' => config('galax_pay.scopes')
         ]);
 
+        $session = GalaxPaySession::query()->where('galax_pay_client_id', $client->id)->first();
+
         $this->assertNotEmpty($session);
     }
 
     /**
      * @test
+     * @define-env usesDatabaseSession
      */
     public function it_can_authenticate()
     {
-        $config = new Config(config('galax_pay'));
+        $config = new Config([
+            'auth_as_partner' => true,
+            'session_driver' => 'database'
+        ]);
+
         $request = new Request($config->options());
 
         $auth = new Auth($config, $request);
@@ -74,7 +89,7 @@ class GalaxPayTest extends TestCase
         if ($auth->sessionExpired($client->galax_id))
             $auth->authenticate($client->galax_id);
 
-        $session = GalaxPaySession::whereHas('galaxPayClient', function ($query) use ($client) {
+        $session = GalaxPaySession::query()->whereHas('galaxPayClient', function ($query) use ($client) {
             return $query->where('id', $client->id);
         })->first();
 
@@ -83,7 +98,7 @@ class GalaxPayTest extends TestCase
 
     /**
      * @test
-     * 
+     * @define-env usesDatabaseSession
      */
     public function it_can_get_ten_customers()
     {
@@ -100,10 +115,12 @@ class GalaxPayTest extends TestCase
 
     /**
      * @test
+     * @define-env usesDatabaseSession
      */
     public function it_can_create_subscription_with_credit_card()
     {
         $myId = GalaxPay::generateId();
+
         $customerId = GalaxPay::generateId();
 
         $client = $this->createGalaxPayClient();
@@ -115,15 +132,21 @@ class GalaxPayTest extends TestCase
             "value" => 12999,
             "quantity" => 12,
             "firstPayDayDate" => date('Y-m-d'),
-            "periodicity" => Periodicity::MONTHLY,
+            "periodicity" => Periodicity::MONTHLY->value,
             "additionalInfo" => "Lorem ipsum dolor sit amet.",
-            "mainPaymentMethodId" => PaymentMethod::CREDIT_CARD,
+            "mainPaymentMethodId" => PaymentMethod::CREDIT_CARD->value,
             "Customer" => [
                 "myId" => $customerId,
-                "name" => "Thiago Enrico Marcos Lopes",
-                "document" => "22820654339",
-                "emails" => ["thiagoenricolopes@gsw.com.br"],
-                "phones" => [2738359874, 27991065923],
+                "name" => "Lorem ipsum dolor sit amet.",
+                "document" => "92111146919",
+                "emails" => [
+                    "teste8858email810@galaxpay.com.br",
+                    "teste5789email4547@galaxpay.com.br"
+                ],
+                "phones" => [
+                    3140201512,
+                    31983890110
+                ],
                 "Address" => [
                     "zipCode" => "30411330",
                     "street" => "Rua platina",

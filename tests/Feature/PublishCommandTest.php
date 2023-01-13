@@ -1,8 +1,10 @@
 <?php
 
-namespace JosanBr\GalaxPay\Tests;
+namespace JosanBr\GalaxPay\Tests\Feature;
 
-class CommandPublishTest extends TestCase
+use JosanBr\GalaxPay\Tests\TestCase;
+
+class PublishCommandTest extends TestCase
 {
     private static $choices = ['config', 'environment variables', 'migrations'];
 
