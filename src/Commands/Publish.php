@@ -101,10 +101,10 @@ class Publish extends Command
 
                         $value = $value == "null" ? '' : $value;
 
-                        $env .= PHP_EOL . "${key}=${value}";
+                        $env .= PHP_EOL . "{$key}={$value}";
                     }
 
-                    file_put_contents($envFilePath, "${env}\n");
+                    file_put_contents($envFilePath, $env . PHP_EOL);
                 }
             }
 
@@ -132,7 +132,7 @@ class Publish extends Command
 
         foreach ($migrations as $migration) {
             list($from, $to) = $migration;
-            copy(__DIR__ . "/../../database/migrations/${from}", $this->getMigrationPath($to));
+            copy(__DIR__ . "/../../database/migrations/{$from}", $this->getMigrationPath($to));
         }
 
         $this->info('Publishing migrations!');
@@ -141,7 +141,7 @@ class Publish extends Command
     private function getMigrationPath($migrationSuffix, $prefix = null)
     {
         $date = $prefix ?: date('Y_m_d_His');
-        return app()->basePath("database/migrations/${date}_{$migrationSuffix}");
+        return app()->basePath("database/migrations/{$date}_{$migrationSuffix}");
     }
 
     /**
@@ -160,7 +160,7 @@ class Publish extends Command
 
             if ($matchingFiles && count($matchingFiles) > 0) {
                 list($migrationPath) = $matchingFiles;
-                $message .= PHP_EOL . "> ${migrationPath}";
+                $message .= PHP_EOL . "> {$migrationPath}";
                 array_push($paths, $migrationPath);
             }
         }
