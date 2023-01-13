@@ -85,7 +85,7 @@ trait ResolveArguments
         $typeId = $typeId ?: $this->config->get('default_id_type');
 
         foreach ($routeParameters as $param)
-            $route = str_replace(":${param}", $param == 'typeId' ? $typeId : $arguments[0], $route);
+            $route = str_replace(":{$param}", $param == 'typeId' ? $typeId : $arguments[0], $route);
 
         return $route;
     }

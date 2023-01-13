@@ -6,8 +6,10 @@ use JosanBr\GalaxPay\Abstracts\Model;
 
 /**
  *
- * @property string $myId
+ * @property int|string $myId
+ * @property int $galaxPayId
  * @property int $value
+ * @property string $status
  * @property date $payday
  * @property string $additionalInfo
  * @property bool $payedOutsideGalaxPay
@@ -20,12 +22,27 @@ use JosanBr\GalaxPay\Abstracts\Model;
  */
 class Charge extends Model
 {
+    /** 
+     * Active
+     */
+    public const ACTIVE = 'active';
+    /** 
+     * Cancelled
+     */
+    public const CANCELED = 'canceled';
+    /** 
+     * Closed
+     */
+    public const CLOSED = 'closed';
+
     /**
      * @var string[]
      */
     protected $fillable = [
         'myId',
+        'galaxPayId',
         'value',
+        'status',
         'payday',
         'additionalInfo',
         'payedOutsideGalaxPay',

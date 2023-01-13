@@ -1,6 +1,6 @@
 # Laravel Galax Pay
 
-Make requests to the Galax Pay API
+A Galax Pay API wrapper for Laravel
 
 ## Installation
 

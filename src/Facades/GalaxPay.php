@@ -47,11 +47,11 @@ use JosanBr\GalaxPay\Http\Options;
  * 
  * @method static mixed editCharge(int|string $id, array|Model $data = [], array|Options $options = [])
  * 
- * @method static mixed retryCharge(int|string $id)
+ * @method static mixed retryCharge(int|string $id, array|Options $options = [])
  * 
- * @method static mixed reverseCharge(int|string $id)
+ * @method static mixed reverseCharge(int|string $id, array|Options $options = [])
  * 
- * @method static mixed cancelCharge(int|string $id)
+ * @method static mixed cancelCharge(int|string $id, array|Options $options = [])
  * 
  * @method static mixed listSubscriptions(array|QueryParams $queryParams = [], array|Options $options = [])
  * 
@@ -63,17 +63,17 @@ use JosanBr\GalaxPay\Http\Options;
  * 
  * @method static mixed editSubscription(int|string $id, array|Model $data = [], array|Options $options = [])
  * 
- * @method static mixed retryTransaction(int|string $id)
+ * @method static mixed retryTransaction(int|string $id, array|Options $options = [])
  * 
- * @method static mixed reverseTransaction(int|string $id)
+ * @method static mixed reverseTransaction(int|string $id, array|Options $options = [])
  * 
- * @method static mixed cancelSubscription(int|string $id)
+ * @method static mixed cancelSubscription(int|string $id, array|Options $options = [])
  * 
  * @method static mixed listTransactions(array|QueryParams $queryParams = [], array|Options $options = [])
  * 
  * @method static mixed editTransaction(int|string $id, array|Model $data = [], array|Options $options = [])
  * 
- * @method static mixed cancelTransaction(int|string $id)
+ * @method static mixed cancelTransaction(int|string $id, array|Options $options = [])
  * 
  * @method static mixed getBoletoPDF(string $entityType, array $data, array|Options $options = [])
  * 

@@ -3,10 +3,10 @@
 namespace JosanBr\GalaxPay\Sessions;
 
 use JosanBr\GalaxPay\Abstracts\Session;
-use JosanBr\GalaxPay\Contracts\Session as ContractsSession;
+
 use JosanBr\GalaxPay\Http\Config;
 
-class Database extends Session implements ContractsSession
+class Database extends Session
 {
     /**
      * @var array
