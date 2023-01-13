@@ -82,7 +82,7 @@ final class Api
      */
     public function setOptions(array $options = [])
     {
-        $this->options = $this->config->options(array_merge($this->options, $options));
+        $this->options = array_merge($this->options, $options);
 
         return $this;
     }
