@@ -25,11 +25,8 @@ class WebhookFailedListener
     public function handle(WebhookFailed $event)
     {
         \Illuminate\Support\Facades\Log::build([
-            'driver' => 'single',
+            'driver' => 'daily',
             'path' => storage_path('logs/galax-pay/webhooks.log'),
-        ])->warning($event->th->getMessage(), [
-            'request' => $event->request,
-            'file' => $event->th->getFile() . ':' . $event->th->getLine(),
-        ]);
+        ])->error($event->th, $event->request->toArray());
     }
 }

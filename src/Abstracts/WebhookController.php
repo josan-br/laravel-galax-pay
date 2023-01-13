@@ -42,10 +42,10 @@ abstract class WebhookController extends Controller
 
         try {
             switch ($request->event) {
-                case static::TRANSACTION_UPDATE_STATUS:
+                case self::TRANSACTION_UPDATE_STATUS:
                     $this->transactionUpdateStatus($request);
                     break;
-                case static::SUBSCRIPTION_ADD_TRANSACTION:
+                case self::SUBSCRIPTION_ADD_TRANSACTION:
                     $this->subscriptionAddTransaction($request);
                     break;
 
