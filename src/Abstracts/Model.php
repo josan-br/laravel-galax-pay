@@ -39,34 +39,39 @@ abstract class Model implements \ArrayAccess, \JsonSerializable
         $this->fill($attributes);
     }
 
-    public function __get($attribute)
+    public function __get(string $attribute): mixed
     {
         return $this->getAttribute($attribute);
     }
 
-    public function __set($attribute, $value): void
+    public function __set(string $attribute, mixed $value): void
     {
         $this->setAttribute($attribute, $value);
     }
 
-    public function __isset($attribute): bool
+    public function __isset(string $attribute): bool
     {
         return $this->issetAttribute($attribute);
     }
 
-    public function __unset($attribute): void
+    public function __unset(string $attribute): void
     {
         $this->unsetAttribute($attribute);
     }
 
-    public function offsetGet($attribute)
+    public function __serialize(): array
+    {
+        return $this->serialize($this->attributes);
+    }
+
+    public function offsetGet(mixed $attribute): mixed
     {
         return $this->getAttribute($attribute);
     }
 
-    public function offsetSet($attribute, $value): void
+    public function offsetSet(mixed $attribute, mixed $value): void
     {
-        $this->setAttribute($attribute, $value);
+        $this->setAttribute((string) $attribute, $value);
     }
 
     public function offsetExists($attribute): bool
@@ -76,7 +81,7 @@ abstract class Model implements \ArrayAccess, \JsonSerializable
 
     public function offsetUnset($attribute): void
     {
-        $this->unsetAttribute($attribute);
+        $this->unsetAttribute((string) $attribute);
     }
 
     public function jsonSerialize(): array
@@ -89,16 +94,26 @@ abstract class Model implements \ArrayAccess, \JsonSerializable
         return json_decode($json, true);
     }
 
-    private function getAttribute(string $attribute)
+    private function &getAttribute(string $attribute): mixed
     {
-        return array_key_exists($attribute, $this->attributes) ? $this->attributes[$attribute] : null;
+        $value = &$this->attributes[$attribute] ?? null;
+
+        if (
+            !is_array($value) &&
+            $this->isModelReferenced($attribute) &&
+            !$this->isInstanceOfModelRef($attribute, $value)
+        ) {
+            $value = $this->createInstance($attribute);
+        }
+
+        return $value;
     }
 
-    private function setAttribute(string $attribute, $value): void
+    private function setAttribute(string $attribute, mixed $value): void
     {
         if (!in_array($attribute, $this->fillable)) return;
 
-        if ($this->isModel($attribute) && is_array($value)) {
+        if ($this->isModelReferenced($attribute) && is_array($value)) {
             $this->attributes[$attribute] = $this->createInstance($attribute, $value);
         } else {
             $this->attributes[$attribute] = $value;
@@ -120,12 +135,12 @@ abstract class Model implements \ArrayAccess, \JsonSerializable
         return array_key_exists($attribute, $this->defaultValues);
     }
 
-    private function isInstance(string $attribute, $value): bool
+    private function isInstanceOfModelRef(string $attribute, $value): bool
     {
         return $value instanceof $this->modelRefs[$attribute];
     }
 
-    private function isModel(string $attribute): bool
+    private function isModelReferenced(string $attribute): bool
     {
         return array_key_exists($attribute, $this->modelRefs) && class_exists($this->modelRefs[$attribute]);
     }
@@ -149,7 +164,7 @@ abstract class Model implements \ArrayAccess, \JsonSerializable
         foreach ($this->fillable as $fill) {
             if (!array_key_exists($fill, $attributes)) continue;
 
-            if ($this->isModel($fill)) {
+            if ($this->isModelReferenced($fill)) {
                 $this->attributes[$fill] = $this->createInstance($fill, $attributes[$fill]);
             } elseif (is_null($attributes[$fill]) && $this->hasDefaultValue($fill)) {
                 $this->attributes[$fill] = $this->defaultValues[$fill];
@@ -163,14 +178,14 @@ abstract class Model implements \ArrayAccess, \JsonSerializable
     {
         $data = [];
 
-        foreach ($attributes as $key => $value) {
-            if ($this->isModel($key)) {
-                if (is_array($value)) {
-                    $data[$key] = $this->serialize($value);
-                } elseif ($this->isInstance($key, $value)) {
-                    $data[$key] = $value->jsonSerialize();
-                }
-            } else $data[$key] = $value;
+        foreach ($attributes as $attr => $value) {
+            if (is_array($value)) {
+                $data[$attr] = $this->serialize($value);
+            } elseif ($value instanceof Model) {
+                $data[$attr] = $value->__serialize();
+            } else {
+                $data[$attr] = $value;
+            }
         }
 
         return $data;
