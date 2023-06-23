@@ -20,15 +20,15 @@
     ],
     "require": {
         "php": "^8.0.2",
-        "guzzlehttp/guzzle": "^7.5",
-        "illuminate/database": "^9.47",
-        "illuminate/support": "^9.47",
-        "illuminate/console": "^9.47"
+        "guzzlehttp/guzzle": "*",
+        "illuminate/database": "*",
+        "illuminate/support": "*",
+        "illuminate/console": "*"
     },
     "require-dev": {
-        "phpunit/phpunit": "^9.5",
-        "orchestra/testbench": "^7.19",
-        "nunomaduro/collision": "^6.4"
+        "phpunit/phpunit": "^10.2",
+        "orchestra/testbench": "^8.5",
+        "nunomaduro/collision": "^7.6"
     },
     "autoload": {
         "psr-4": {
